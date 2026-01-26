@@ -1,0 +1,17 @@
+model Organization {
+  // base
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // attribute
+  name String @unique
+  slug String @unique // e.g. "school-a", "company-b"
+
+  // relation
+  users      User[]
+  profiles   Profile[]
+  divisions  Division[]
+  activities Activity[]
+}

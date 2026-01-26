@@ -1,14 +1,16 @@
 model User {
   // base
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   // attribute
-  email    String @unique
-  password String
+  email          String  @unique
+  password       String
+  organizationId String?
 
   // relation
-  profile Profile? // Relasi 1-to-1 ke profil karyawan
+  organization Organization? @relation(fields: [organizationId], references: [id])
+  profile      Profile? // Relasi 1-to-1 ke profil karyawan
 }

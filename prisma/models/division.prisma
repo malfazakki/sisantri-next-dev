@@ -1,0 +1,18 @@
+model Division {
+  // base
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // attribute
+  name           String
+  organizationId String
+
+  // relation
+  organization Organization @relation(fields: [organizationId], references: [id])
+  departments  Department[]
+  profiles     Profile[]
+
+  @@unique([name, organizationId])
+}

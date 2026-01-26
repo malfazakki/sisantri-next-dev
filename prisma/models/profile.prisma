@@ -1,18 +1,26 @@
 model Profile {
   // base
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   // attribute
-  userId   String @unique
-  empId    String @unique // Contoh: SPA-0001
-  fullName String // Nama Lengkap
-  role     String // Manager, Staff, Direksi
+  userId         String  @unique
+  empId          String // Contoh: SPA-0001
+  fullName       String // Nama Lengkap
+  role           String // Manager, Staff, Direksi
+  divisionId     String?
+  departmentId   String?
+  organizationId String?
 
   // relation
+  organization          Organization?          @relation(fields: [organizationId], references: [id])
+  division              Division?              @relation(fields: [divisionId], references: [id])
+  department            Department?            @relation(fields: [departmentId], references: [id])
   attendances           Attendance[] // Relasi ke catatan absen
   activityRegistrations ActivityRegistration[]
   user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([empId, organizationId])
 }

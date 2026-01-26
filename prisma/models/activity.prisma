@@ -1,14 +1,18 @@
 model Activity {
   // base
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
   // attribute
-  name String @unique // "Kantor", "Tahajud", "Dhuha"
+  name           String
+  organizationId String
 
   // relation
+  organization          Organization           @relation(fields: [organizationId], references: [id])
   attendances           Attendance[]
   activityRegistrations ActivityRegistration[]
+
+  @@unique([name, organizationId])
 }
