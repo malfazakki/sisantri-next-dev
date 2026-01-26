@@ -1,0 +1,12 @@
+model Profile {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  empId    String @unique // Contoh: SPA-0001
+  fullName String // Nama Lengkap
+  role     String // Manager, Staff, Direksi
+
+  attendances Attendance[] // Relasi ke catatan absen
+  updatedAt   DateTime     @updatedAt
+}

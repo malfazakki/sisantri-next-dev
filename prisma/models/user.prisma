@@ -1,0 +1,8 @@
+// 1. Data Autentikasi (Sangat rahasia)
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  profile   Profile? // Relasi 1-to-1 ke profil karyawan
+}

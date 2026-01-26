@@ -1,0 +1,16 @@
+model Attendance {
+  id     String   @id @default(uuid())
+  date   DateTime // Tanggal absen (Hanya tanggalnya saja)
+  status String // H, S, I, A
+
+  profileId String
+  profile   Profile @relation(fields: [profileId], references: [id])
+
+  activityId Int
+  activity   Activity @relation(fields: [activityId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  // Mencegah double absen di hari & kegiatan yang sama untuk satu orang
+  @@unique([profileId, activityId, date])
+}
