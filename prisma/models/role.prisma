@@ -1,0 +1,14 @@
+model Role {
+  // base
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // attribute
+  name        String  @unique // e.g. "Admin", "Teacher", "Student"
+  description String?
+
+  // relation
+  users UserRole[]
+}

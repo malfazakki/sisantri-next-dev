@@ -13,4 +13,5 @@ model User {
   // relation
   organization Organization? @relation(fields: [organizationId], references: [id])
   profile      Profile? // Relasi 1-to-1 ke profil karyawan
+  roles        UserRole[]
 }

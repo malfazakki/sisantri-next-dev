@@ -9,7 +9,6 @@ model Profile {
   userId         String  @unique
   empId          String // Contoh: SPA-0001
   fullName       String // Nama Lengkap
-  role           String // Manager, Staff, Direksi
   divisionId     String?
   departmentId   String?
   organizationId String?

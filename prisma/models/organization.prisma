@@ -8,6 +8,9 @@ model Organization {
   // attribute
   name String @unique
   slug String @unique // e.g. "school-a", "company-b"
+  address String
+  phone String
+  email String
 
   // relation
   users      User[]
