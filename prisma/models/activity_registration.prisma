@@ -1,0 +1,19 @@
+model ActivityRegistration {
+  // base
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // attribute
+  profileId  String
+  activityId Int
+
+  // relation
+  profile     Profile      @relation(fields: [profileId], references: [id])
+  activity    Activity     @relation(fields: [activityId], references: [id])
+  attendances Attendance[] @relation("ActivityRegistrationToAttendance")
+
+  // composite unique to ensure a user can only be registered once to an activity
+  @@unique([profileId, activityId])
+}

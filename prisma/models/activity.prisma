@@ -1,5 +1,14 @@
 model Activity {
-  id          Int          @id @default(autoincrement())
-  name        String       @unique // "Kantor", "Tahajud", "Dhuha"
-  attendances Attendance[]
+  // base
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  // attribute
+  name String @unique // "Kantor", "Tahajud", "Dhuha"
+
+  // relation
+  attendances           Attendance[]
+  activityRegistrations ActivityRegistration[]
 }
