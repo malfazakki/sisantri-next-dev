@@ -15,17 +15,7 @@ export const useLoginForm = () => {
   const { mutate, isPending } = useLoginMutation();
 
   function onSubmit(values: LoginType) {
-    mutate(values, {
-      onSuccess: (data) => {
-        console.log("Login Values:", values);
-        console.log("Response:", data);
-        alert("Login form submitted! Check console for values.");
-      },
-      onError: (error) => {
-        console.error("Login error:", error);
-        alert("Login failed. Please try again.");
-      }
-    });
+    mutate(values);
   }
 
   return {
