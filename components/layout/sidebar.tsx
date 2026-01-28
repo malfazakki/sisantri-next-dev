@@ -3,21 +3,14 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  LayoutDashboard, 
-  Layers, 
-  Building2, 
-  ChevronLeft, 
-  ChevronRight,
-  Menu,
-  X
-} from "lucide-react";
+import { LayoutDashboard, Layers, Building2, ShieldCheck, ChevronLeft, ChevronRight, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Division", href: "/division", icon: Layers },
-  { name: "Department", href: "/department", icon: Building2 },
+	{ name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+	{ name: "Division", href: "/division", icon: Layers },
+	{ name: "Department", href: "/department", icon: Building2 },
+	{ name: "Roles", href: "/roles", icon: ShieldCheck },
 ];
 
 export function Sidebar() {
