@@ -16,6 +16,7 @@ export interface User {
 	email: string;
 	createdAt: string;
 	profile?: {
+		id: string;
 		fullName: string;
 		empId: string;
 		division?: {

@@ -25,6 +25,13 @@ export async function GET(
 				organizationId: authUser.organizationId,
 				deletedAt: null,
 			},
+			include: {
+				_count: {
+					select: {
+						activityRegistrations: true,
+					},
+				},
+			},
 		});
 
 		if (!activity) {
