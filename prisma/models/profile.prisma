@@ -9,6 +9,7 @@ model Profile {
   userId         String  @unique
   empId          String // Contoh: SPA-0001
   fullName       String // Nama Lengkap
+  avatar         String? // profile picture URL
   divisionId     String?
   departmentId   String?
   organizationId String?

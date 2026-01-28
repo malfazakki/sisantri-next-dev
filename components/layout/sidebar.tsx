@@ -14,8 +14,23 @@ import {
 	X,
 	Users,
 	Activity,
+	LogOut,
+	User,
+	ChevronsUpDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/hooks/use-auth-store";
+import { useRouter } from "next/navigation";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuGroup,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const menuItems = [
 	{ name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -27,33 +42,35 @@ const menuItems = [
 ];
 
 export function Sidebar() {
-  const pathname = usePathname();
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+	const pathname = usePathname();
+	const router = useRouter();
+	const { user, logout } = useAuthStore();
+	const [isCollapsed, setIsCollapsed] = useState(false);
+	const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  // Automatically collapse on medium screens, and handle mobile view
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setIsCollapsed(false); // On mobile it's either hidden or full width drawer
-      } else if (window.innerWidth < 1024) {
-        setIsCollapsed(true);
-      } else {
-        setIsCollapsed(false);
-      }
-    };
+	// Automatically collapse on medium screens, and handle mobile view
+	useEffect(() => {
+		const handleResize = () => {
+			if (window.innerWidth < 768) {
+				setIsCollapsed(false); // On mobile it's either hidden or full width drawer
+			} else if (window.innerWidth < 1024) {
+				setIsCollapsed(true);
+			} else {
+				setIsCollapsed(false);
+			}
+		};
 
-    // Set initial state
-    handleResize();
+		// Set initial state
+		handleResize();
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
 
-  const toggleSidebar = () => setIsCollapsed(!isCollapsed);
-  const toggleMobile = () => setIsMobileOpen(!isMobileOpen);
+	const toggleSidebar = () => setIsCollapsed(!isCollapsed);
+	const toggleMobile = () => setIsMobileOpen(!isMobileOpen);
 
-  return (
+	return (
 		<>
 			{/* Mobile Menu Button */}
 			<div className='md:hidden fixed top-4 left-4 z-50'>
@@ -155,25 +172,75 @@ export function Sidebar() {
 
 				{/* User Profile Hook-up */}
 				<div className='p-4 border-t border-slate-50'>
-					<div
-						className={cn(
-							"flex items-center gap-3 p-2 rounded-xl bg-slate-50/50",
-							isCollapsed && "justify-center",
-						)}
-					>
-						<div className='w-8 h-8 rounded-full bg-slate-200 animate-pulse flex-shrink-0' />
-						{!isCollapsed && (
-							<div className='overflow-hidden'>
-								<p className='text-sm font-semibold text-slate-800 truncate'>Administrator</p>
-								<p className='text-xs text-slate-500 truncate'>admin@sisantri.com</p>
-							</div>
-						)}
-					</div>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<button
+								className={cn(
+									"flex items-center gap-3 p-2 rounded-xl bg-slate-50/50 hover:bg-slate-100 transition-colors w-full text-left outline-none",
+									isCollapsed && "justify-center",
+								)}
+							>
+								<Avatar className='h-8 w-8 rounded-lg'>
+									<AvatarImage src={user?.profile?.avatar as string} alt={user?.name || "User"} />
+									<AvatarFallback className='rounded-lg bg-indigo-100 text-indigo-700 font-bold'>
+										{user?.name?.substring(0, 2).toUpperCase() || "US"}
+									</AvatarFallback>
+								</Avatar>
+								{!isCollapsed && (
+									<div className='flex items-center justify-between flex-1 min-w-0'>
+										<div className='overflow-hidden text-left'>
+											<p className='text-sm font-semibold text-slate-800 truncate'>
+												{user?.name || "Administrator"}
+											</p>
+											<p className='text-xs text-slate-500 truncate'>
+												{user?.email || "admin@sisantri.com"}
+											</p>
+										</div>
+										<ChevronsUpDown className='ml-auto size-4 text-slate-500' />
+									</div>
+								)}
+							</button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent className='w-56 rounded-lg' side='right' align='end' sideOffset={12}>
+							<DropdownMenuLabel className='p-0 font-normal'>
+								<div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
+									<Avatar className='h-8 w-8 rounded-lg'>
+										<AvatarImage src={user?.profile?.avatar as string} alt={user?.name || "User"} />
+										<AvatarFallback className='rounded-lg bg-indigo-100 text-indigo-700 font-bold'>
+											{user?.name?.substring(0, 2).toUpperCase() || "US"}
+										</AvatarFallback>
+									</Avatar>
+									<div className='grid flex-1 text-left text-sm leading-tight'>
+										<span className='truncate font-semibold'>{user?.name || "Administrator"}</span>
+										<span className='truncate text-xs'>{user?.email || "admin@sisantri.com"}</span>
+									</div>
+								</div>
+							</DropdownMenuLabel>
+							<DropdownMenuSeparator />
+							<DropdownMenuGroup>
+								<DropdownMenuItem onClick={() => router.push("/profile")}>
+									<User className='mr-2 h-4 w-4' />
+									Account
+								</DropdownMenuItem>
+							</DropdownMenuGroup>
+							<DropdownMenuSeparator />
+							<DropdownMenuItem
+								className='text-red-600 focus:text-red-600 focus:bg-red-50'
+								onClick={() => {
+									logout();
+									router.push("/login");
+								}}
+							>
+								<LogOut className='mr-2 h-4 w-4' />
+								Sign out
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
 				</div>
 			</aside>
 
 			{/* Spacing for content */}
 			<div className={cn("hidden md:block transition-all duration-300", isCollapsed ? "w-20" : "w-64")} />
 		</>
-  );
+	);
 }

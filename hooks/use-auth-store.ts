@@ -2,17 +2,23 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 interface User {
-  id: string;
-  email: string;
-  name?: string | null;
-  organizationId?: string | null;
-  profile?: Record<string, unknown> | null;
-  roles?: {
-    role: {
-      name: string;
-    };
-  }[];
-  organization?: Record<string, unknown> | null;
+	id: string;
+	email: string;
+	name?: string | null;
+	organizationId?: string | null;
+	profile?: {
+		avatar?: string | null;
+		bio?: string | null;
+	} | null;
+	roles?: {
+		role: {
+			name: string;
+		};
+	}[];
+	organization?: {
+		id: string;
+		name: string;
+	} | null;
 }
 
 interface AuthState {
