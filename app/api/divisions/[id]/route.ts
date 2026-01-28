@@ -1,12 +1,13 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
-import { getAuthUser } from '@/lib/server-auth';
+// Removed NextResponse import as it is unused
+import prisma from "@/lib/prisma";
+import { getAuthUser } from "@/lib/server-auth";
+import { successResponse, errorResponse } from "@/lib/api-response";
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
 	try {
 		const user = await getAuthUser();
 		if (!user) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+			return errorResponse("Unauthorized", 401);
 		}
 
 		const { id } = await params;
@@ -20,13 +21,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 		});
 
 		if (!division) {
-			return NextResponse.json({ error: "Division not found" }, { status: 404 });
+			return errorResponse("Division not found", 404);
 		}
 
-		return NextResponse.json(division);
+		return successResponse(division);
 	} catch (error) {
 		console.error("[DIVISION_GET]", error);
-		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+		return errorResponse("Internal server error", 500);
 	}
 }
 
@@ -34,7 +35,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 	try {
 		const user = await getAuthUser();
 		if (!user) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+			return errorResponse("Unauthorized", 401);
 		}
 
 		const { id } = await params;
@@ -42,7 +43,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 		const { name } = body;
 
 		if (!name) {
-			return NextResponse.json({ error: "Name is required" }, { status: 400 });
+			return errorResponse("Name is required", 400);
 		}
 
 		const division = await prisma.division.updateMany({
@@ -57,17 +58,17 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 		});
 
 		if (division.count === 0) {
-			return NextResponse.json({ error: "Division not found or not owned by organization" }, { status: 404 });
+			return errorResponse("Division not found or not owned by organization", 404);
 		}
 
 		const updatedDivision = await prisma.division.findUnique({
 			where: { id },
 		});
 
-		return NextResponse.json(updatedDivision);
+		return successResponse(updatedDivision, "Division updated successfully");
 	} catch (error) {
 		console.error("[DIVISION_PATCH]", error);
-		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+		return errorResponse("Internal server error", 500);
 	}
 }
 
@@ -75,7 +76,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 	try {
 		const user = await getAuthUser();
 		if (!user) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+			return errorResponse("Unauthorized", 401);
 		}
 
 		const { id } = await params;
@@ -93,12 +94,12 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 		});
 
 		if (division.count === 0) {
-			return NextResponse.json({ error: "Division not found or not owned by organization" }, { status: 404 });
+			return errorResponse("Division not found or not owned by organization", 404);
 		}
 
-		return NextResponse.json({ message: "Division deleted successfully" });
+		return successResponse(null, "Division deleted successfully");
 	} catch (error) {
 		console.error("[DIVISION_DELETE]", error);
-		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+		return errorResponse("Internal server error", 500);
 	}
 }

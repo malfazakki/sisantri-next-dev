@@ -1,9 +1,10 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
-import bcrypt from 'bcrypt';
+// Removed NextResponse import as it is unused
+import prisma from "@/lib/prisma";
+import bcrypt from "bcrypt";
+import { successResponse, errorResponse } from "@/lib/api-response";
 
 export async function POST(request: Request) {
-  try {
+	try {
 		const body = await request.json();
 		const {
 			email,
@@ -27,7 +28,7 @@ export async function POST(request: Request) {
 			!organizationPhone ||
 			!organizationEmail
 		) {
-			return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+			return errorResponse("Missing required fields", 400);
 		}
 
 		// Check if user already exists
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
 		});
 
 		if (existingUser) {
-			return NextResponse.json({ error: "User with this email already exists" }, { status: 409 });
+			return errorResponse("User with this email already exists", 409);
 		}
 
 		// Check if organization slug already exists
@@ -45,7 +46,7 @@ export async function POST(request: Request) {
 		});
 
 		if (existingOrg) {
-			return NextResponse.json({ error: "Organization identifier (slug) already exists" }, { status: 409 });
+			return errorResponse("Organization identifier (slug) already exists", 409);
 		}
 
 		// Hash password
@@ -115,22 +116,17 @@ export async function POST(request: Request) {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const { password: _, ...userWithoutPassword } = result.user;
 
-		return NextResponse.json(
+		return successResponse(
 			{
-				message: "Registration successful",
-				data: {
-					user: userWithoutPassword,
-					profile: result.profile,
-					organization: result.organization,
-				},
+				user: userWithoutPassword,
+				profile: result.profile,
+				organization: result.organization,
 			},
-			{ status: 201 },
+			"Registration successful",
+			201,
 		);
-  } catch (error) {
-    console.error('Registration error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
+	} catch (error) {
+		console.error("Registration error:", error);
+		return errorResponse("Internal server error", 500);
+	}
 }

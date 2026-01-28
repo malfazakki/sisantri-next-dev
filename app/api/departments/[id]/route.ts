@@ -1,12 +1,13 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
-import { getAuthUser } from '@/lib/server-auth';
+// Removed NextResponse import as it is unused
+import prisma from "@/lib/prisma";
+import { getAuthUser } from "@/lib/server-auth";
+import { successResponse, errorResponse } from "@/lib/api-response";
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
 	try {
 		const user = await getAuthUser();
 		if (!user) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+			return errorResponse("Unauthorized", 401);
 		}
 
 		const { id } = await params;
@@ -25,13 +26,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 		});
 
 		if (!department) {
-			return NextResponse.json({ error: "Department not found" }, { status: 404 });
+			return errorResponse("Department not found", 404);
 		}
 
-		return NextResponse.json(department);
+		return successResponse(department);
 	} catch (error) {
 		console.error("[DEPARTMENT_GET]", error);
-		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+		return errorResponse("Internal server error", 500);
 	}
 }
 
@@ -39,7 +40,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 	try {
 		const user = await getAuthUser();
 		if (!user) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+			return errorResponse("Unauthorized", 401);
 		}
 
 		const { id } = await params;
@@ -58,7 +59,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 		});
 
 		if (!existingDepartment) {
-			return NextResponse.json({ error: "Department not found" }, { status: 404 });
+			return errorResponse("Department not found", 404);
 		}
 
 		// If divisionId is being updated, verify ownership
@@ -72,7 +73,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 			});
 
 			if (!division) {
-				return NextResponse.json({ error: "Invalid Division ID or access denied" }, { status: 403 });
+				return errorResponse("Invalid Division ID or access denied", 403);
 			}
 		}
 
@@ -84,10 +85,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 			},
 		});
 
-		return NextResponse.json(updatedDepartment);
+		return successResponse(updatedDepartment, "Department updated successfully");
 	} catch (error) {
 		console.error("[DEPARTMENT_PATCH]", error);
-		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+		return errorResponse("Internal server error", 500);
 	}
 }
 
@@ -95,7 +96,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 	try {
 		const user = await getAuthUser();
 		if (!user) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+			return errorResponse("Unauthorized", 401);
 		}
 
 		const { id } = await params;
@@ -111,7 +112,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 		});
 
 		if (!department) {
-			return NextResponse.json({ error: "Department not found" }, { status: 404 });
+			return errorResponse("Department not found", 404);
 		}
 
 		// Soft delete
@@ -122,9 +123,9 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 			},
 		});
 
-		return NextResponse.json({ message: "Department deleted successfully" });
+		return successResponse(null, "Department deleted successfully");
 	} catch (error) {
 		console.error("[DEPARTMENT_DELETE]", error);
-		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+		return errorResponse("Internal server error", 500);
 	}
 }
