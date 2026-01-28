@@ -34,3 +34,13 @@ export interface User {
 		};
 	}[];
 }
+
+export interface PaginatedUserResponse {
+	users: User[];
+	pagination: {
+		total: number;
+		page: number;
+		limit: number;
+		totalPages: number;
+	};
+}
