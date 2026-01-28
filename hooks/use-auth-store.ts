@@ -7,8 +7,20 @@ interface User {
 	name?: string | null;
 	organizationId?: string | null;
 	profile?: {
+		id: string;
+		empId: string;
+		fullName: string;
 		avatar?: string | null;
-		bio?: string | null;
+		divisionId?: string | null;
+		departmentId?: string | null;
+		division?: {
+			id: string;
+			name: string;
+		} | null;
+		department?: {
+			id: string;
+			name: string;
+		} | null;
 	} | null;
 	roles?: {
 		role: {

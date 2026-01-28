@@ -19,8 +19,8 @@ export const useUpdateProfileMutation = () => {
 			queryClient.invalidateQueries({ queryKey: ["profile"] });
 			
 			// Update auth store with new user data
-			if (token && response.data) {
-				setAuth(token, response.data);
+			if (token && response) {
+				setAuth(token, response);
 			}
 			
 			toast.success("Profile updated successfully");

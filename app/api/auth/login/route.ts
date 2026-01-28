@@ -19,7 +19,12 @@ export async function POST(request: Request) {
 		const user = await prisma.user.findUnique({
 			where: { email },
 			include: {
-				profile: true,
+				profile: {
+					include: {
+						division: true,
+						department: true,
+					},
+				},
 				roles: {
 					include: {
 						role: true,
@@ -55,6 +60,12 @@ export async function POST(request: Request) {
 		// Return success response
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const { password: _, ...userWithoutPassword } = user;
+
+		// Add name field for frontend compatibility
+		if (user.profile) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(userWithoutPassword as any).name = user.profile.fullName;
+		}
 
 		return successResponse(
 			{
