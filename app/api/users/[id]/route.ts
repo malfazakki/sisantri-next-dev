@@ -1,0 +1,180 @@
+import prisma from "@/lib/prisma";
+import { getAuthUser } from "@/lib/server-auth";
+import { successResponse, errorResponse } from "@/lib/api-response";
+
+export async function GET(
+	request: Request,
+	{ params }: { params: Promise<{ id: string }> }
+) {
+	try {
+		const authUser = await getAuthUser();
+		if (!authUser) {
+			return errorResponse("Unauthorized", 401);
+		}
+
+		const { id } = await params;
+
+		const user = await prisma.user.findFirst({
+			where: {
+				id,
+				organizationId: authUser.organizationId,
+				deletedAt: null,
+			},
+			include: {
+				profile: {
+					include: {
+						division: true,
+						department: true,
+					},
+				},
+				roles: {
+					include: {
+						role: true,
+					},
+				},
+			},
+		});
+
+		if (!user) {
+			return errorResponse("User not found", 404);
+		}
+
+		// Remove password from response
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { password: _, ...userWithoutPassword } = user;
+
+		return successResponse(userWithoutPassword);
+	} catch (error) {
+		console.error("[USER_GET]", error);
+		return errorResponse("Internal server error", 500);
+	}
+}
+
+export async function PATCH(
+	request: Request,
+	{ params }: { params: Promise<{ id: string }> }
+) {
+	try {
+		const authUser = await getAuthUser();
+		if (!authUser) {
+			return errorResponse("Unauthorized", 401);
+		}
+
+		const { id } = await params;
+		const body = await request.json();
+		const { email, fullName, empId, divisionId, departmentId, roleId } = body;
+
+		// Check if user exists and belongs to the same organization
+		const existingUser = await prisma.user.findFirst({
+			where: {
+				id,
+				organizationId: authUser.organizationId,
+				deletedAt: null,
+			},
+		});
+
+		if (!existingUser) {
+			return errorResponse("User not found", 404);
+		}
+
+		// Update in transaction
+		const updatedUser = await prisma.$transaction(async (tx) => {
+			// 1. Update User
+			if (email) {
+				await tx.user.update({
+					where: { id },
+					data: { email },
+				});
+			}
+
+			// 2. Update Profile
+			await tx.profile.update({
+				where: { userId: id },
+				data: {
+					fullName: fullName !== undefined ? fullName : undefined,
+					empId: empId !== undefined ? empId : undefined,
+					divisionId: divisionId !== undefined ? divisionId : undefined,
+					departmentId: departmentId !== undefined ? departmentId : undefined,
+				},
+			});
+
+			// 3. Update Role (assuming single role)
+			if (roleId) {
+				await tx.userRole.deleteMany({
+					where: { userId: id },
+				});
+				await tx.userRole.create({
+					data: {
+						userId: id,
+						roleId,
+					},
+				});
+			}
+
+			return tx.user.findUnique({
+				where: { id },
+				include: {
+					profile: {
+						include: {
+							division: true,
+							department: true,
+						},
+					},
+					roles: {
+						include: {
+							role: true,
+						},
+					},
+				},
+			});
+		});
+
+		if (!updatedUser) {
+			return errorResponse("Failed to update user", 500);
+		}
+
+		// Remove password
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { password: __, ...userWithoutPassword } = updatedUser;
+
+		return successResponse(userWithoutPassword, "User updated successfully");
+	} catch (error) {
+		console.error("[USER_PATCH]", error);
+		return errorResponse("Internal server error", 500);
+	}
+}
+
+export async function DELETE(
+	request: Request,
+	{ params }: { params: Promise<{ id: string }> }
+) {
+	try {
+		const authUser = await getAuthUser();
+		if (!authUser) {
+			return errorResponse("Unauthorized", 401);
+		}
+
+		const { id } = await params;
+
+		// Soft delete
+		const result = await prisma.user.updateMany({
+			where: {
+				id,
+				organizationId: authUser.organizationId,
+				deletedAt: null,
+			},
+			data: {
+				deletedAt: new Date(),
+			},
+		});
+
+		if (result.count === 0) {
+			return errorResponse("User not found or not authorized", 404);
+		}
+
+		return successResponse(null, "User deleted successfully");
+	} catch (error) {
+		console.error("[USER_DELETE]", error);
+		return errorResponse("Internal server error", 500);
+	}
+}

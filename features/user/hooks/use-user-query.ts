@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
-import { PaginatedUserResponse } from "../types/user-schema";
+import { PaginatedUserResponse, User } from "../types/user-schema";
 
 export interface UserQueryParams {
 	page?: number;
@@ -30,5 +30,16 @@ export const useCheckEmpId = (empId: string) => {
 			return response.data as { exists: boolean };
 		},
 		enabled: empId.length > 0,
+	});
+};
+
+export const useUserQuery = (id: string) => {
+	return useQuery<User>({
+		queryKey: ["user", id],
+		queryFn: async () => {
+			const response = await api.get(`/api/users/${id}`);
+			return response.data;
+		},
+		enabled: !!id,
 	});
 };

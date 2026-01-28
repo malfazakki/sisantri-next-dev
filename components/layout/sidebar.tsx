@@ -13,6 +13,7 @@ import {
 	Menu,
 	X,
 	Users,
+	Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +23,7 @@ const menuItems = [
 	{ name: "Department", href: "/department", icon: Building2 },
 	{ name: "Roles", href: "/roles", icon: ShieldCheck },
 	{ name: "Users", href: "/users", icon: Users },
+	{ name: "Activities", href: "/activities", icon: Activity },
 ];
 
 export function Sidebar() {

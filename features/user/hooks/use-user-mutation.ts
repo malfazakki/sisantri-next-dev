@@ -21,3 +21,39 @@ export const useInviteUserMutation = () => {
     },
   });
 };
+export const useUpdateUserMutation = (id: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (data: Partial<InviteUserValues>) => {
+			const response = await api.patch(`/api/users/${id}`, data);
+			return response.data;
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["users"] });
+			queryClient.invalidateQueries({ queryKey: ["user", id] });
+			toast.success("User updated successfully");
+		},
+		onError: (error: AxiosError<{ error: string }>) => {
+			toast.error(error.response?.data?.error || "Failed to update user");
+		},
+	});
+};
+
+export const useDeleteUserMutation = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (id: string) => {
+			const response = await api.delete(`/api/users/${id}`);
+			return response.data;
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["users"] });
+			toast.success("User deleted successfully");
+		},
+		onError: (error: AxiosError<{ error: string }>) => {
+			toast.error(error.response?.data?.error || "Failed to delete user");
+		},
+	});
+};
