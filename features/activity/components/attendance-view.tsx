@@ -35,21 +35,14 @@ export function AttendanceView({ activityId }: AttendanceViewProps) {
 	const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 	const [searchQuery, setSearchQuery] = useState("");
 	const [localChanges, setLocalChanges] = useState<Record<string, string>>({});
-	const [lastResetKey, setLastResetKey] = useState<string>("");
-
 	const { data: activity, isLoading: isActivityLoading } = useActivityQuery(activityId);
-	const { data: attendance, isLoading: isAttendanceLoading } = useActivityAttendanceQuery(
-		activityId,
-		selectedDate,
-	);
+	const { data: attendance, isLoading: isAttendanceLoading } = useActivityAttendanceQuery(activityId, selectedDate);
 	const mutation = useUpdateActivityAttendanceMutation(activityId);
 
-	// Reset local changes when activity or date changes
-	const currentResetKey = `${activityId}-${selectedDate.toISOString()}`;
-	if (lastResetKey !== currentResetKey) {
-		setLastResetKey(currentResetKey);
+	const handleDateSelect = (date: Date) => {
+		setSelectedDate(date);
 		setLocalChanges({});
-	}
+	};
 
 	const serverAttendanceData = useMemo(() => {
 		const data: Record<string, string> = {};
@@ -69,31 +62,13 @@ export function AttendanceView({ activityId }: AttendanceViewProps) {
 		[serverAttendanceData, localChanges],
 	);
 
-	const handleStatusChange = (profileId: string, status: string) => {
-		setLocalChanges((prev) => ({
-			...prev,
-			[profileId]: status,
-		}));
-	};
-
-	const onSave = () => {
-		const attendances = Object.entries(attendanceData).map(([profileId, status]) => ({
-			profileId,
-			status,
-		}));
-
-		mutation.mutate({
-			date: selectedDate,
-			attendances,
-		});
-	};
-
 	const filteredAttendance = useMemo(() => {
 		if (!attendance) return [];
+		const search = searchQuery.toLowerCase();
 		return attendance.filter(
 			(item) =>
-				item.profile.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				item.profile.empId.toLowerCase().includes(searchQuery.toLowerCase()),
+				item.profile.fullName.toLowerCase().includes(search) ||
+				item.profile.empId.toLowerCase().includes(search),
 		);
 	}, [attendance, searchQuery]);
 
@@ -107,6 +82,40 @@ export function AttendanceView({ activityId }: AttendanceViewProps) {
 			total: attendance?.length || 0,
 		};
 	}, [attendanceData, attendance]);
+
+	const handleStatusChange = (profileId: string, status: string) => {
+		setLocalChanges((prev) => ({
+			...prev,
+			[profileId]: status,
+		}));
+	};
+
+	const handleBulkStatusChange = (status: string) => {
+		const newChanges = { ...localChanges };
+		filteredAttendance.forEach((item) => {
+			newChanges[item.profileId] = status;
+		});
+		setLocalChanges(newChanges);
+	};
+
+	const onSave = () => {
+		const attendances = Object.entries(attendanceData).map(([profileId, status]) => ({
+			profileId,
+			status,
+		}));
+
+		mutation.mutate(
+			{
+				date: selectedDate,
+				attendances,
+			},
+			{
+				onSuccess: () => {
+					setLocalChanges({});
+				},
+			},
+		);
+	};
 
 	const hasChanges = Object.keys(localChanges).length > 0;
 
@@ -152,7 +161,7 @@ export function AttendanceView({ activityId }: AttendanceViewProps) {
 										variant={"outline"}
 										className={cn(
 											"flex-1 justify-start text-left font-normal border-zinc-200 dark:border-zinc-800",
-											!selectedDate && "text-muted-foreground"
+											!selectedDate && "text-muted-foreground",
 										)}
 									>
 										<CalendarIcon className='mr-2 h-4 w-4' />
@@ -163,16 +172,16 @@ export function AttendanceView({ activityId }: AttendanceViewProps) {
 									<Calendar
 										mode='single'
 										selected={selectedDate}
-										onSelect={(date: Date | undefined) => date && setSelectedDate(date)}
+										onSelect={(date: Date | undefined) => date && handleDateSelect(date)}
 										initialFocus
 									/>
 								</PopoverContent>
 							</Popover>
-							<Button 
-								variant='outline' 
-								size='icon' 
+							<Button
+								variant='outline'
+								size='icon'
 								title='Go to Today'
-								onClick={() => setSelectedDate(new Date())}
+								onClick={() => handleDateSelect(new Date())}
 								className='shrink-0'
 							>
 								<span className='text-[10px] font-bold'>TOD</span>
@@ -205,18 +214,31 @@ export function AttendanceView({ activityId }: AttendanceViewProps) {
 							</div>
 							<div className='p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/50'>
 								<p className='text-xs font-medium text-amber-600 dark:text-amber-400'>Permission</p>
-								<p className='text-2xl font-bold text-amber-700 dark:text-amber-300'>{stats.permission}</p>
+								<p className='text-2xl font-bold text-amber-700 dark:text-amber-300'>
+									{stats.permission}
+								</p>
 							</div>
 						</div>
 						<div className='pt-2 border-t text-sm'>
 							<div className='flex justify-between text-muted-foreground'>
 								<span>Completion</span>
-								<span>{stats.total > 0 ? Math.round(((stats.present + stats.sick + stats.permission + stats.absent) / stats.total) * 100) : 0}%</span>
+								<span>
+									{stats.total > 0
+										? Math.round(
+												((stats.present + stats.sick + stats.permission + stats.absent) /
+													stats.total) *
+													100,
+											)
+										: 0}
+									%
+								</span>
 							</div>
 							<div className='mt-2 h-2 w-full rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden'>
-								<div 
-									className='h-full bg-primary transition-all duration-500' 
-									style={{ width: `${stats.total > 0 ? ((stats.present + stats.sick + stats.permission + stats.absent) / stats.total) * 100 : 0}%` }}
+								<div
+									className='h-full bg-primary transition-all duration-500'
+									style={{
+										width: `${stats.total > 0 ? ((stats.present + stats.sick + stats.permission + stats.absent) / stats.total) * 100 : 0}%`,
+									}}
 								/>
 							</div>
 						</div>
@@ -236,7 +258,7 @@ export function AttendanceView({ activityId }: AttendanceViewProps) {
 							/>
 						</div>
 						<div className='flex items-center gap-3 w-full sm:w-auto'>
-							<Button 
+							<Button
 								onClick={onSave}
 								disabled={mutation.isPending || !attendance || attendance.length === 0 || !hasChanges}
 								className='flex-1 sm:flex-none rounded-xl'
@@ -270,7 +292,8 @@ export function AttendanceView({ activityId }: AttendanceViewProps) {
 								<div className='space-y-1'>
 									<p className='text-lg font-semibold'>No match found</p>
 									<p className='text-sm text-muted-foreground max-w-sm'>
-										We couldn&apos;t find any users matching your criteria. Try adjusting your search or assign more users to this activity.
+										We couldn&apos;t find any users matching your criteria. Try adjusting your
+										search or assign more users to this activity.
 									</p>
 								</div>
 							</div>
@@ -279,29 +302,83 @@ export function AttendanceView({ activityId }: AttendanceViewProps) {
 								<table className='w-full'>
 									<thead>
 										<tr className='border-b bg-muted/30'>
-											<th className='px-6 py-4 text-left font-semibold text-sm'>User Information</th>
+											<th className='px-6 py-4 text-left font-semibold text-sm'>
+												User Information
+											</th>
 											<th className='px-6 py-4 text-left font-semibold text-sm'>Division & ID</th>
-											<th className='px-6 py-4 text-right font-semibold text-sm'>Status Selection</th>
+											<th className='px-6 py-4 text-right font-semibold text-sm'>
+												<div className='flex flex-col items-end gap-2'>
+													<span>Status Selection</span>
+													<div className='flex items-center gap-1 font-normal'>
+														<span className='text-[10px] text-muted-foreground mr-1'>
+															Set all:
+														</span>
+														<StatusButton
+															active={false}
+															onClick={() => handleBulkStatusChange("H")}
+															variant='present'
+															label='H'
+															fullName='Mark all as Hadir'
+															className='h-7 w-7 text-[10px] rounded-lg'
+														/>
+														<StatusButton
+															active={false}
+															onClick={() => handleBulkStatusChange("S")}
+															variant='sick'
+															label='S'
+															fullName='Mark all as Sakit'
+															className='h-7 w-7 text-[10px] rounded-lg'
+														/>
+														<StatusButton
+															active={false}
+															onClick={() => handleBulkStatusChange("I")}
+															variant='permission'
+															label='I'
+															fullName='Mark all as Izin'
+															className='h-7 w-7 text-[10px] rounded-lg'
+														/>
+														<StatusButton
+															active={false}
+															onClick={() => handleBulkStatusChange("A")}
+															variant='absent'
+															label='A'
+															fullName='Mark all as Alfa'
+															className='h-7 w-7 text-[10px] rounded-lg'
+														/>
+													</div>
+												</div>
+											</th>
 										</tr>
 									</thead>
 									<tbody className='divide-y'>
 										{filteredAttendance.map((item) => (
-											<tr key={item.profileId} className='hover:bg-muted/30 transition-colors group'>
+											<tr
+												key={item.profileId}
+												className='hover:bg-muted/30 transition-colors group'
+											>
 												<td className='px-6 py-4'>
 													<div className='flex items-center gap-3'>
 														<div className='h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold uppercase'>
 															{item?.profile?.fullName.charAt(0)}
 														</div>
 														<div className='flex flex-col'>
-															<span className='font-semibold'>{item?.profile?.fullName}</span>
-															<span className='text-xs text-muted-foreground'>{item?.profile?.user?.email}</span>
+															<span className='font-semibold'>
+																{item?.profile?.fullName}
+															</span>
+															<span className='text-xs text-muted-foreground'>
+																{item?.profile?.user?.email}
+															</span>
 														</div>
 													</div>
 												</td>
 												<td className='px-6 py-4 text-sm'>
 													<div className='flex flex-col gap-1'>
-														<span className='text-muted-foreground'>{item?.profile?.division?.name || "No Division"}</span>
-														<code className='text-[10px] bg-muted px-1.5 py-0.5 rounded w-fit'>{item?.profile?.empId}</code>
+														<span className='text-muted-foreground'>
+															{item?.profile?.division?.name || "No Division"}
+														</span>
+														<code className='text-[10px] bg-muted px-1.5 py-0.5 rounded w-fit'>
+															{item?.profile?.empId}
+														</code>
 													</div>
 												</td>
 												<td className='px-6 py-4 text-right'>
@@ -349,31 +426,33 @@ export function AttendanceView({ activityId }: AttendanceViewProps) {
 	);
 }
 
-function StatusButton({ 
-	active, 
-	onClick, 
-	variant, 
+function StatusButton({
+	active,
+	onClick,
+	variant,
 	label,
-	fullName
-}: { 
-	active: boolean, 
-	onClick: () => void, 
-	variant: 'present' | 'sick' | 'permission' | 'absent',
-	label: string,
-	fullName: string
+	fullName,
+	className,
+}: {
+	active: boolean;
+	onClick: () => void;
+	variant: "present" | "sick" | "permission" | "absent";
+	label: string;
+	fullName: string;
+	className?: string;
 }) {
 	const variants = {
-		present: active 
-			? "bg-green-600 text-white hover:bg-green-700 shadow-sm border-green-600" 
+		present: active
+			? "bg-green-600 text-white hover:bg-green-700 shadow-sm border-green-600"
 			: "bg-green-50 text-green-700 hover:bg-green-100 dark:bg-green-950/20 dark:text-green-400 border-green-200/50",
-		sick: active 
-			? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm border-blue-600" 
+		sick: active
+			? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm border-blue-600"
 			: "bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-950/20 dark:text-blue-400 border-blue-200/50",
-		permission: active 
-			? "bg-amber-600 text-white hover:bg-amber-700 shadow-sm border-amber-600" 
+		permission: active
+			? "bg-amber-600 text-white hover:bg-amber-700 shadow-sm border-amber-600"
 			: "bg-amber-50 text-amber-700 hover:bg-amber-100 dark:bg-amber-950/20 dark:text-amber-400 border-amber-200/50",
-		absent: active 
-			? "bg-red-600 text-white hover:bg-red-700 shadow-sm border-red-600" 
+		absent: active
+			? "bg-red-600 text-white hover:bg-red-700 shadow-sm border-red-600"
 			: "bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-950/20 dark:text-red-400 border-red-200/50",
 	};
 
@@ -384,7 +463,8 @@ function StatusButton({
 			title={fullName}
 			className={cn(
 				"h-9 w-9 p-0 rounded-xl text-xs font-bold transition-all border-2",
-				variants[variant]
+				variants[variant],
+				className,
 			)}
 			onClick={onClick}
 		>
