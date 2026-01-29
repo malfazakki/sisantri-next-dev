@@ -41,3 +41,30 @@ export const assignUsersSchema = z.object({
 });
 
 export type AssignUsersValues = z.infer<typeof assignUsersSchema>;
+
+export interface Attendance {
+	profileId: string;
+	profile: ActivityRegistration["profile"];
+	status: string | null;
+	attendanceId: string | null;
+}
+
+export const attendanceStatus = {
+	PRESENT: "H",
+	SICK: "S",
+	PERMISSION: "I",
+	ABSENT: "A",
+} as const;
+
+export const updateAttendanceSchema = z.object({
+	date: z.date(),
+	attendances: z.array(
+		z.object({
+			profileId: z.string(),
+			status: z.string(),
+		}),
+	),
+});
+
+export type UpdateAttendanceValues = z.infer<typeof updateAttendanceSchema>;
+
