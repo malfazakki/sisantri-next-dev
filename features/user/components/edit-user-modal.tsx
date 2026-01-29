@@ -79,7 +79,8 @@ export const EditUserModal = ({ user, isOpen, onClose }: EditUserModalProps) => 
 
 	const debouncedEmpId = useDebounce(empIdValue, 500);
 
-	const { data: checkData, isFetching: isCheckingEmpId } = useCheckEmpId(debouncedEmpId || "");
+	const { data: checkData, isFetching: isCheckingEmpId } = useCheckEmpId(debouncedEmpId || "", user?.id);
+
 
 	const isActuallyChecking = empIdValue !== debouncedEmpId || isCheckingEmpId;
 

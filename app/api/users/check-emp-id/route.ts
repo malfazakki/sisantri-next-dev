@@ -12,6 +12,7 @@ export async function GET(request: Request) {
 
 		const { searchParams } = new URL(request.url);
 		const empId = searchParams.get('empId');
+		const userId = searchParams.get("userId");
 
 		if (!empId) {
 			return errorResponse("Missing empId parameter", 400);
@@ -21,11 +22,13 @@ export async function GET(request: Request) {
 			where: {
 				empId,
 				organizationId: authUser.organizationId,
+				userId: userId ? { not: userId } : undefined,
 			},
 		});
 
 		return successResponse({ exists: !!existingProfile });
 	} catch (error: unknown) {
+
 		console.error("[CHECK_EMP_ID_GET]", error);
 		return errorResponse("Internal server error", 500);
 	}

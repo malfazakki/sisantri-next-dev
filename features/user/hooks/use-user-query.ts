@@ -21,17 +21,20 @@ export const useUsersQuery = (params: UserQueryParams = {}) => {
 	});
 };
 
-export const useCheckEmpId = (empId: string) => {
+export const useCheckEmpId = (empId: string, userId?: string) => {
 	return useQuery({
-		queryKey: ["check-emp-id", empId],
+		queryKey: ["check-emp-id", empId, userId],
 		queryFn: async () => {
 			if (!empId) return { exists: false };
-			const response = await api.get(`/api/users/check-emp-id?empId=${empId}`);
+			const response = await api.get(
+				`/api/users/check-emp-id?empId=${empId}${userId ? `&userId=${userId}` : ""}`,
+			);
 			return response.data as { exists: boolean };
 		},
 		enabled: empId.length > 0,
 	});
 };
+
 
 export const useUserQuery = (id: string) => {
 	return useQuery<User>({

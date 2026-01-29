@@ -77,7 +77,23 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 			return errorResponse("User not found", 404);
 		}
 
+		// Validation: Check if empId already exists for ANOTHER user in the organization
+		if (empId) {
+			const existingEmpId = await prisma.profile.findFirst({
+				where: {
+					empId,
+					organizationId: authUser.organizationId,
+					userId: { not: id },
+				},
+			});
+
+			if (existingEmpId) {
+				return errorResponse("Employee ID already exists in this organization", 409);
+			}
+		}
+
 		// Update in transaction
+
 		const updatedUser = await prisma.$transaction(async (tx) => {
 			// 1. Update User
 			if (email) {
