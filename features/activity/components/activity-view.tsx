@@ -1,21 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, Loader2, Trash2, Edit2, Activity as ActivityIcon, UserPlus, Users, CalendarCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CreateActivityModal } from "./create-activity-modal";
 import { UpdateActivityModal } from "./update-activity-modal";
 import { AssignUsersModal } from "./assign-users-modal";
-import { AttendanceModal } from "./attendance-modal";
 import { useActivitiesQuery } from "../hooks/use-activity-query";
 import { useDeleteActivityMutation } from "../hooks/use-activity-mutation";
 import { Activity } from "../types/activity-schema";
 
 export function ActivityView() {
+	const router = useRouter();
 	const [isCreateOpen, setIsCreateOpen] = useState(false);
 	const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
 	const [assigningActivity, setAssigningActivity] = useState<Activity | null>(null);
-	const [attendanceActivity, setAttendanceActivity] = useState<Activity | null>(null);
 
 	const { data: activities, isLoading } = useActivitiesQuery();
 	const { mutate: deleteActivity } = useDeleteActivityMutation();
@@ -50,12 +50,6 @@ export function ActivityView() {
 				activity={assigningActivity}
 				isOpen={!!assigningActivity}
 				onClose={() => setAssigningActivity(null)}
-			/>
-
-			<AttendanceModal
-				activity={attendanceActivity}
-				isOpen={!!attendanceActivity}
-				onClose={() => setAttendanceActivity(null)}
 			/>
 
 			<div className='rounded-xl border bg-white shadow-sm dark:bg-zinc-950 overflow-hidden'>
@@ -141,7 +135,9 @@ export function ActivityView() {
 														variant='ghost'
 														size='icon'
 														className='h-8 w-8 text-zinc-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-950'
-														onClick={() => setAttendanceActivity(activity)}
+														onClick={() =>
+															router.push(`/activities/${activity.id}/attendance`)
+														}
 														title='Take Attendance'
 													>
 														<CalendarCheck className='w-4 h-4' />
