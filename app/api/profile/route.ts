@@ -16,6 +16,7 @@ export async function GET() {
 					include: {
 						division: true,
 						department: true,
+						position: true,
 					},
 				},
 				roles: {
@@ -33,7 +34,7 @@ export async function GET() {
 
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const { password: _, ...userWithoutPassword } = user;
-		
+
 		// Add name field for frontend compatibility
 		if (user.profile) {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,6 +73,7 @@ export async function PATCH(request: Request) {
 					include: {
 						division: true,
 						department: true,
+						position: true,
 					},
 				},
 				roles: {

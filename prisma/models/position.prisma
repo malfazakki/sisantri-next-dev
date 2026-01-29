@@ -1,0 +1,18 @@
+model Position {
+  // base
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // attribute
+  name           String
+  description    String?
+  organizationId String
+
+  // relation
+  organization Organization @relation(fields: [organizationId], references: [id])
+  profiles     Profile[]
+
+  @@unique([name, organizationId])
+}

@@ -17,4 +17,5 @@ model Organization {
   profiles   Profile[]
   divisions  Division[]
   activities Activity[]
+  positions  Position[]
 }

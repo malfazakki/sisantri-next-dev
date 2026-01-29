@@ -17,6 +17,7 @@ export async function GET(req: Request) {
 		const search = searchParams.get("search") || "";
 		const divisionId = searchParams.get("divisionId");
 		const departmentId = searchParams.get("departmentId");
+		const positionId = searchParams.get("positionId");
 		const roleId = searchParams.get("roleId");
 
 		const skip = (page - 1) * limit;
@@ -34,10 +35,11 @@ export async function GET(req: Request) {
 			];
 		}
 
-		if (divisionId || departmentId) {
+		if (divisionId || departmentId || positionId) {
 			const profileWhere: Prisma.ProfileWhereInput = {};
 			if (divisionId) profileWhere.divisionId = divisionId;
 			if (departmentId) profileWhere.departmentId = departmentId;
+			if (positionId) profileWhere.positionId = positionId;
 			where.profile = profileWhere;
 		}
 
@@ -61,6 +63,7 @@ export async function GET(req: Request) {
 						include: {
 							division: true,
 							department: true,
+							position: true,
 						},
 					},
 					roles: {
