@@ -7,24 +7,12 @@ import { inviteUserSchema, InviteUserValues } from "../types/user-schema";
 import { useDivisionsQuery } from "@/features/division";
 import { useDepartmentsQuery } from "@/features/department";
 import { useRolesQuery } from "@/features/role";
+import { usePositionsQuery } from "@/features/position";
 import { useCheckEmpId } from "../hooks/use-user-query";
 import { useDebounce } from "@/hooks/use-debounce";
 
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
@@ -38,6 +26,7 @@ export const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
 	const { data: divisions, isLoading: isLoadingDivisions } = useDivisionsQuery();
 	const { data: departments, isLoading: isLoadingDepartments } = useDepartmentsQuery();
 	const { data: roles, isLoading: isLoadingRoles } = useRolesQuery();
+	const { data: positions, isLoading: isLoadingPositions } = usePositionsQuery();
 	const { mutate: inviteUser, isPending } = useInviteUserMutation();
 
 	const form = useForm<InviteUserValues>({
@@ -49,6 +38,7 @@ export const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
 			roleId: "",
 			divisionId: "",
 			departmentId: "",
+			positionId: "",
 		},
 	});
 
@@ -68,9 +58,7 @@ export const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
 
 	const isActuallyChecking = empIdValue !== debouncedEmpId || isCheckingEmpId;
 
-	const filteredDepartments = departments?.filter(
-		(dept) => dept.divisionId === selectedDivisionId
-	);
+	const filteredDepartments = departments?.filter((dept) => dept.divisionId === selectedDivisionId);
 
 	const onSubmit = async (values: InviteUserValues) => {
 		inviteUser(values, {
@@ -81,7 +69,7 @@ export const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
 		});
 	};
 
-	const isLoadingData = isLoadingDivisions || isLoadingDepartments || isLoadingRoles;
+	const isLoadingData = isLoadingDivisions || isLoadingDepartments || isLoadingRoles || isLoadingPositions;
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
@@ -127,24 +115,22 @@ export const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
 								<FormItem>
 									<FormLabel>Employee ID</FormLabel>
 									<FormControl>
-										<div className="relative">
+										<div className='relative'>
 											<Input placeholder='EMP-001' {...field} />
 											{isActuallyChecking && (
-												<div className="absolute right-2 top-2.5">
-													<Loader2 className="h-4 w-4 animate-spin text-slate-500" />
+												<div className='absolute right-2 top-2.5'>
+													<Loader2 className='h-4 w-4 animate-spin text-slate-500' />
 												</div>
 											)}
 										</div>
 									</FormControl>
 									{empIdValue && !isActuallyChecking && checkData?.exists && (
-										<p className="text-sm font-medium text-red-500">
+										<p className='text-sm font-medium text-red-500'>
 											Employee ID already exists in this organization.
 										</p>
 									)}
 									{empIdValue && !isActuallyChecking && !checkData?.exists && (
-										<p className="text-sm font-medium text-green-600">
-											Employee ID is available.
-										</p>
+										<p className='text-sm font-medium text-green-600'>Employee ID is available.</p>
 									)}
 									<FormMessage />
 								</FormItem>
@@ -230,6 +216,29 @@ export const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
 								)}
 							/>
 						</div>
+						<FormField
+							control={form.control}
+							name='positionId'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Position (Optional)</FormLabel>
+									<FormControl>
+										<select
+											{...field}
+											className='flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+										>
+											<option value=''>- Select Position -</option>
+											{positions?.map((position) => (
+												<option key={position.id} value={position.id}>
+													{position.name}
+												</option>
+											))}
+										</select>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 						<div className='flex justify-end space-x-2 pt-4'>
 							<Button variant='outline' onClick={onClose} type='button'>
 								Cancel

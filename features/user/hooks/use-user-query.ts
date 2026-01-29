@@ -9,6 +9,7 @@ export interface UserQueryParams {
 	divisionId?: string;
 	departmentId?: string;
 	roleId?: string;
+	positionId?: string;
 }
 
 export const useUsersQuery = (params: UserQueryParams = {}) => {

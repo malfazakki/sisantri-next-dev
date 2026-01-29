@@ -7,6 +7,7 @@ export const inviteUserSchema = z.object({
 	roleId: z.string().min(1, "Role is required"),
 	divisionId: z.string().min(1, "Division is required"),
 	departmentId: z.string().optional(),
+	positionId: z.string().optional(),
 });
 
 export type InviteUserValues = z.infer<typeof inviteUserSchema>;
@@ -14,7 +15,6 @@ export type InviteUserValues = z.infer<typeof inviteUserSchema>;
 export const updateUserSchema = inviteUserSchema.partial();
 
 export type UpdateUserValues = z.infer<typeof updateUserSchema>;
-
 
 export interface User {
 	id: string;
@@ -29,6 +29,10 @@ export interface User {
 			name: string;
 		};
 		department?: {
+			id: string;
+			name: string;
+		};
+		position?: {
 			id: string;
 			name: string;
 		};

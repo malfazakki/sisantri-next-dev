@@ -22,6 +22,7 @@ import { useUsersQuery } from "../hooks/use-user-query";
 import { useDivisionsQuery } from "@/features/division";
 import { useDepartmentsQuery } from "@/features/department";
 import { useRolesQuery } from "@/features/role";
+import { usePositionsQuery } from "@/features/position";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Badge } from "@/components/ui/badge";
 import { User } from "../types/user-schema";
@@ -41,12 +42,14 @@ export function UserView() {
 	const [divisionId, setDivisionId] = useState("");
 	const [departmentId, setDepartmentId] = useState("");
 	const [roleId, setRoleId] = useState("");
+	const [positionId, setPositionId] = useState("");
 
 	const debouncedSearch = useDebounce(search, 500);
 
 	const { data: divisions } = useDivisionsQuery();
 	const { data: departments } = useDepartmentsQuery();
 	const { data: roles } = useRolesQuery();
+	const { data: positions } = usePositionsQuery();
 
 	const { data, isLoading } = useUsersQuery({
 		page,
@@ -55,6 +58,7 @@ export function UserView() {
 		divisionId: divisionId || undefined,
 		departmentId: departmentId || undefined,
 		roleId: roleId || undefined,
+		positionId: positionId || undefined,
 	});
 
 	const users = data?.users || [];
@@ -65,6 +69,7 @@ export function UserView() {
 		setDivisionId("");
 		setDepartmentId("");
 		setRoleId("");
+		setPositionId("");
 		setPage(1);
 	};
 
@@ -101,7 +106,7 @@ export function UserView() {
 				user={editUser}
 			/>
 
-			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 bg-white p-4 rounded-xl border border-slate-100 shadow-sm'>
+			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 bg-white p-4 rounded-xl border border-slate-100 shadow-sm'>
 				<div className='relative lg:col-span-2'>
 					<Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400' />
 					<Input
@@ -165,11 +170,27 @@ export function UserView() {
 					))}
 				</select>
 
-				{(search || divisionId || departmentId || roleId) && (
+				<select
+					value={positionId}
+					onChange={(e) => {
+						setPositionId(e.target.value);
+						setPage(1);
+					}}
+					className='h-10 px-3 py-2 rounded-md border border-slate-200 bg-white text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all'
+				>
+					<option value=''>All Positions</option>
+					{positions?.map((pos) => (
+						<option key={pos.id} value={pos.id}>
+							{pos.name}
+						</option>
+					))}
+				</select>
+
+				{(search || divisionId || departmentId || roleId || positionId) && (
 					<Button
 						variant='ghost'
 						onClick={handleReset}
-						className='lg:col-start-5 text-slate-500 hover:text-red-600 flex items-center gap-2 h-10'
+						className='text-slate-500 hover:text-red-600 flex items-center gap-2 h-10'
 					>
 						<X className='w-4 h-4' />
 						Reset
@@ -191,6 +212,7 @@ export function UserView() {
 										<th className='px-6 py-4'>User</th>
 										<th className='px-6 py-4'>Role</th>
 										<th className='px-6 py-4'>Division / Dept</th>
+										<th className='px-6 py-4'>Position</th>
 										<th className='px-6 py-4'>Employee ID</th>
 										<th className='px-6 py-4 text-right'>Actions</th>
 									</tr>
@@ -240,6 +262,11 @@ export function UserView() {
 															{user.profile?.department?.name || "-"}
 														</span>
 													</div>
+												</td>
+												<td className='px-6 py-4'>
+													<span className='text-sm text-slate-600'>
+														{user.profile?.position?.name || "-"}
+													</span>
 												</td>
 												<td className='px-6 py-4 text-slate-500 text-xs font-mono tracking-tighter'>
 													<span className='bg-slate-50 border border-slate-100 px-2 py-1 rounded'>
