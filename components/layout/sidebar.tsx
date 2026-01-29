@@ -17,6 +17,7 @@ import {
 	LogOut,
 	User,
 	ChevronsUpDown,
+	Briefcase,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/hooks/use-auth-store";
@@ -36,6 +37,7 @@ const menuItems = [
 	{ name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
 	{ name: "Division", href: "/division", icon: Layers },
 	{ name: "Department", href: "/department", icon: Building2 },
+	{ name: "Position", href: "/position", icon: Briefcase },
 	{ name: "Roles", href: "/roles", icon: ShieldCheck },
 	{ name: "Users", href: "/users", icon: Users },
 	{ name: "Activities", href: "/activities", icon: Activity },
