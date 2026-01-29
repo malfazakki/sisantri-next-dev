@@ -1,19 +1,41 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Loader2, Mail, Briefcase, Building2, Search, ChevronLeft, ChevronRight, X } from "lucide-react";
+import {
+	Plus,
+	Loader2,
+	Mail,
+	Briefcase,
+	Building2,
+	Search,
+	ChevronLeft,
+	ChevronRight,
+	X,
+	MoreVertical,
+	Edit2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { InviteUserModal } from "./invite-user-modal";
+import { EditUserModal } from "./edit-user-modal";
 import { useUsersQuery } from "../hooks/use-user-query";
 import { useDivisionsQuery } from "@/features/division";
 import { useDepartmentsQuery } from "@/features/department";
 import { useRolesQuery } from "@/features/role";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Badge } from "@/components/ui/badge";
+import { User } from "../types/user-schema";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function UserView() {
 	const [isOpen, setIsOpen] = useState(false);
+	const [editUser, setEditUser] = useState<User | null>(null);
+	const [isEditOpen, setIsEditOpen] = useState(false);
 	const [search, setSearch] = useState("");
 	const [page, setPage] = useState(1);
 	const [divisionId, setDivisionId] = useState("");
@@ -46,6 +68,11 @@ export function UserView() {
 		setPage(1);
 	};
 
+	const handleEdit = (user: User) => {
+		setEditUser(user);
+		setIsEditOpen(true);
+	};
+
 	const filteredDepartments = departments?.filter((dept) => dept.divisionId === divisionId);
 
 	return (
@@ -65,6 +92,14 @@ export function UserView() {
 			</div>
 
 			<InviteUserModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+			<EditUserModal
+				isOpen={isEditOpen}
+				onClose={() => {
+					setIsEditOpen(false);
+					setEditUser(null);
+				}}
+				user={editUser}
+			/>
 
 			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 bg-white p-4 rounded-xl border border-slate-100 shadow-sm'>
 				<div className='relative lg:col-span-2'>
@@ -157,12 +192,13 @@ export function UserView() {
 										<th className='px-6 py-4'>Role</th>
 										<th className='px-6 py-4'>Division / Dept</th>
 										<th className='px-6 py-4'>Employee ID</th>
+										<th className='px-6 py-4 text-right'>Actions</th>
 									</tr>
 								</thead>
 								<tbody className='divide-y divide-slate-100'>
 									{users.length === 0 ? (
 										<tr>
-											<td colSpan={4} className='px-6 py-12 text-center text-slate-500 italic'>
+											<td colSpan={5} className='px-6 py-12 text-center text-slate-500 italic'>
 												No users found matching your filters.
 											</td>
 										</tr>
@@ -209,6 +245,21 @@ export function UserView() {
 													<span className='bg-slate-50 border border-slate-100 px-2 py-1 rounded'>
 														{user.profile?.empId || "-"}
 													</span>
+												</td>
+												<td className='px-6 py-4 text-right'>
+													<DropdownMenu>
+														<DropdownMenuTrigger asChild>
+															<Button variant='ghost' className='h-8 w-8 p-0'>
+																<MoreVertical className='h-4 w-4' />
+															</Button>
+														</DropdownMenuTrigger>
+														<DropdownMenuContent align='end'>
+															<DropdownMenuItem onClick={() => handleEdit(user)}>
+																<Edit2 className='mr-2 h-4 w-4' />
+																Edit
+															</DropdownMenuItem>
+														</DropdownMenuContent>
+													</DropdownMenu>
 												</td>
 											</tr>
 										))

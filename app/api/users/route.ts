@@ -45,6 +45,10 @@ export async function GET(req: Request) {
 			where.roles = {
 				some: {
 					roleId,
+					deletedAt: null,
+					role: {
+						deletedAt: null,
+					},
 				},
 			};
 		}
@@ -60,11 +64,18 @@ export async function GET(req: Request) {
 						},
 					},
 					roles: {
+						where: {
+							deletedAt: null,
+							role: {
+								deletedAt: null,
+							},
+						},
 						include: {
 							role: true,
 						},
 					},
 				},
+
 				orderBy: {
 					createdAt: "desc",
 				},

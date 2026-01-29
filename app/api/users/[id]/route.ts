@@ -2,10 +2,7 @@ import prisma from "@/lib/prisma";
 import { getAuthUser } from "@/lib/server-auth";
 import { successResponse, errorResponse } from "@/lib/api-response";
 
-export async function GET(
-	request: Request,
-	{ params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
 	try {
 		const authUser = await getAuthUser();
 		if (!authUser) {
@@ -28,6 +25,12 @@ export async function GET(
 					},
 				},
 				roles: {
+					where: {
+						deletedAt: null,
+						role: {
+							deletedAt: null,
+						},
+					},
 					include: {
 						role: true,
 					},
@@ -50,10 +53,7 @@ export async function GET(
 	}
 }
 
-export async function PATCH(
-	request: Request,
-	{ params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
 	try {
 		const authUser = await getAuthUser();
 		if (!authUser) {
@@ -93,16 +93,19 @@ export async function PATCH(
 				data: {
 					fullName: fullName !== undefined ? fullName : undefined,
 					empId: empId !== undefined ? empId : undefined,
-					divisionId: divisionId !== undefined ? divisionId : undefined,
-					departmentId: departmentId !== undefined ? departmentId : undefined,
+					divisionId: divisionId || undefined,
+					departmentId: departmentId === "" ? null : departmentId || undefined,
 				},
 			});
 
 			// 3. Update Role (assuming single role)
 			if (roleId) {
+				// Delete existing user roles (hard delete for simplicity in junction table,
+				// or soft delete if we want to keep history)
 				await tx.userRole.deleteMany({
 					where: { userId: id },
 				});
+
 				await tx.userRole.create({
 					data: {
 						userId: id,
@@ -121,6 +124,12 @@ export async function PATCH(
 						},
 					},
 					roles: {
+						where: {
+							deletedAt: null,
+							role: {
+								deletedAt: null,
+							},
+						},
 						include: {
 							role: true,
 						},

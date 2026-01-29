@@ -11,6 +11,11 @@ export const inviteUserSchema = z.object({
 
 export type InviteUserValues = z.infer<typeof inviteUserSchema>;
 
+export const updateUserSchema = inviteUserSchema.partial();
+
+export type UpdateUserValues = z.infer<typeof updateUserSchema>;
+
+
 export interface User {
 	id: string;
 	email: string;
