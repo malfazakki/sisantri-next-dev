@@ -34,25 +34,42 @@ interface User {
 }
 
 interface AuthState {
-  token: string | null;
-  user: User | null;
-  isAuthenticated: boolean;
-  setAuth: (token: string, user: User) => void;
-  logout: () => void;
+	token: string | null;
+	user: User | null;
+	isAuthenticated: boolean;
+	_hasHydrated: boolean;
+	setHasHydrated: (state: boolean) => void;
+	setAuth: (token: string, user: User) => void;
+	logout: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      token: null,
-      user: null,
-      isAuthenticated: false,
-      setAuth: (token, user) => set({ token, user, isAuthenticated: true }),
-      logout: () => set({ token: null, user: null, isAuthenticated: false }),
-    }),
-    {
-      name: 'auth-storage',
-      storage: createJSONStorage(() => localStorage),
-    }
-  )
+	persist(
+		(set) => ({
+			token: null,
+			user: null,
+			isAuthenticated: false,
+			_hasHydrated: false,
+			setHasHydrated: (state) => set({ _hasHydrated: state }),
+			setAuth: (token, user) => {
+				if (typeof window !== "undefined") {
+					document.cookie = `auth-token=${token}; path=/; max-age=86400; SameSite=Lax`;
+				}
+				set({ token, user, isAuthenticated: true });
+			},
+			logout: () => {
+				if (typeof window !== "undefined") {
+					document.cookie = "auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+				}
+				set({ token: null, user: null, isAuthenticated: false });
+			},
+		}),
+		{
+			name: "auth-storage",
+			storage: createJSONStorage(() => localStorage),
+			onRehydrateStorage: () => (state) => {
+				state?.setHasHydrated(true);
+			},
+		},
+	),
 );
