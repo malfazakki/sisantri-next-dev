@@ -18,4 +18,5 @@ model Organization {
   divisions  Division[]
   activities Activity[]
   positions  Position[]
+  roles      Role[]
 }

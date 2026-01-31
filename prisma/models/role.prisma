@@ -6,9 +6,13 @@ model Role {
   deletedAt DateTime?
 
   // attribute
-  name        String  @unique // e.g. "Admin", "Teacher", "Student"
-  description String?
+  name           String
+  description    String?
+  organizationId String
 
   // relation
-  users UserRole[]
+  organization Organization @relation(fields: [organizationId], references: [id])
+  users        UserRole[]
+
+  @@unique([name, organizationId])
 }

@@ -12,6 +12,7 @@ export async function GET() {
 
 		const roles = await prisma.role.findMany({
 			where: {
+				organizationId: user.organizationId,
 				deletedAt: null,
 			},
 			orderBy: {
@@ -44,6 +45,7 @@ export async function POST(request: Request) {
 			data: {
 				name,
 				description,
+				organizationId: user.organizationId,
 			},
 		});
 

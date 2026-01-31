@@ -10,6 +10,7 @@ model Profile {
   empId          String // Contoh: SPA-0001
   fullName       String // Nama Lengkap
   avatar         String? // profile picture URL
+  gender         String? // Ikhwan / Akhwat
   divisionId     String?
   departmentId   String?
   positionId     String?

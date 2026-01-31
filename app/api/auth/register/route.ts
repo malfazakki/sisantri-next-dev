@@ -54,21 +54,7 @@ export async function POST(request: Request) {
 
 		// Transaction to create everything
 		const result = await prisma.$transaction(async (tx) => {
-			// 1. Ensure ADMIN role exists
-			let adminRole = await tx.role.findUnique({
-				where: { name: "ADMIN" },
-			});
-
-			if (!adminRole) {
-				adminRole = await tx.role.create({
-					data: {
-						name: "ADMIN",
-						description: "Administrator with full access",
-					},
-				});
-			}
-
-			// 2. Create Organization
+			// 1. Create Organization
 			const organization = await tx.organization.create({
 				data: {
 					name: organizationName,
@@ -76,6 +62,15 @@ export async function POST(request: Request) {
 					address: organizationAddress,
 					phone: organizationPhone,
 					email: organizationEmail,
+				},
+			});
+
+			// 2. Create organization-specific ADMIN role
+			const adminRole = await tx.role.create({
+				data: {
+					name: "ADMIN",
+					description: "Administrator with full access",
+					organizationId: organization.id,
 				},
 			});
 
@@ -101,7 +96,7 @@ export async function POST(request: Request) {
 				},
 			});
 
-			// 5. Assign ADMIN role to User
+			// 5. Assign the new organization-specific ADMIN role to User
 			await tx.userRole.create({
 				data: {
 					userId: user.id,
