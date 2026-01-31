@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -18,6 +18,7 @@ import {
 	User,
 	ChevronsUpDown,
 	Briefcase,
+	GraduationCap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/hooks/use-auth-store";
@@ -41,6 +42,7 @@ const menuItems = [
 	{ name: "Roles", href: "/roles", icon: ShieldCheck },
 	{ name: "Users", href: "/users", icon: Users },
 	{ name: "Activities", href: "/activities", icon: Activity },
+	{ name: "Batches", href: "/batches", icon: GraduationCap },
 ];
 
 export function Sidebar() {
