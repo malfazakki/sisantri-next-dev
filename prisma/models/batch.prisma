@@ -1,4 +1,4 @@
-model Role {
+model Batch {
   // base
   id        String    @id @default(uuid())
   createdAt DateTime  @default(now())
@@ -7,12 +7,13 @@ model Role {
 
   // attribute
   name           String
+  organizationId String
+  year           String
   description    String?
-  organizationId String?
 
   // relation
-  organization Organization? @relation(fields: [organizationId], references: [id])
-  users        UserRole[]
+  organization Organization @relation(fields: [organizationId], references: [id])
+  profiles     Profile[]
 
-  @@unique([name, organizationId])
+  @@unique([name, organizationId, year])
 }

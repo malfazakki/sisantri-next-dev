@@ -8,6 +8,7 @@ export const inviteUserSchema = z.object({
 	divisionId: z.string().min(1, "Division is required"),
 	departmentId: z.string().optional(),
 	positionId: z.string().optional(),
+	batchId: z.string().optional(),
 });
 
 export type InviteUserValues = z.infer<typeof inviteUserSchema>;
@@ -33,6 +34,10 @@ export interface User {
 			name: string;
 		};
 		position?: {
+			id: string;
+			name: string;
+		};
+		batch?: {
 			id: string;
 			name: string;
 		};

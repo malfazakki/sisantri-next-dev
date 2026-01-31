@@ -19,4 +19,5 @@ model Organization {
   activities Activity[]
   positions  Position[]
   roles      Role[]
+  batches    Batch[]
 }

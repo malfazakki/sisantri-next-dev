@@ -23,6 +23,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 						division: true,
 						department: true,
 						position: true,
+						batch: true,
 					},
 				},
 				roles: {
@@ -63,7 +64,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
 		const { id } = await params;
 		const body = await request.json();
-		const { email, fullName, empId, divisionId, departmentId, positionId, roleId } = body;
+		const { email, fullName, empId, divisionId, departmentId, positionId, roleId, batchId } = body;
 
 		// Check if user exists and belongs to the same organization
 		const existingUser = await prisma.user.findFirst({
@@ -113,6 +114,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 					divisionId: divisionId || undefined,
 					departmentId: departmentId === "" ? null : departmentId || undefined,
 					positionId: positionId === "" ? null : positionId || undefined,
+					batchId: batchId === "" ? null : batchId || undefined,
 				},
 			});
 
@@ -140,6 +142,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 							division: true,
 							department: true,
 							position: true,
+							batch: true,
 						},
 					},
 					roles: {

@@ -17,7 +17,7 @@ export async function POST(request: Request) {
 		}
 
 		const body = await request.json();
-		const { email, fullName, empId, roleId, divisionId, departmentId, positionId } = body;
+		const { email, fullName, empId, roleId, divisionId, departmentId, positionId, batchId } = body;
 
 		// Validation
 		if (!email || !fullName || !empId || !roleId || !divisionId) {
@@ -107,6 +107,7 @@ export async function POST(request: Request) {
 					divisionId: divisionId,
 					departmentId: departmentId || null,
 					positionId: positionId || null,
+					batchId: batchId || null,
 				},
 			});
 
