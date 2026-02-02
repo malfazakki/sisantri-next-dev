@@ -210,6 +210,7 @@ export function UserView() {
 								<thead className='bg-slate-50 border-b border-slate-100 uppercase tracking-wider text-[11px] font-bold text-slate-500'>
 									<tr>
 										<th className='px-6 py-4'>User</th>
+										<th className='px-6 py-4'>Gender</th>
 										<th className='px-6 py-4'>Role</th>
 										<th className='px-6 py-4'>Division / Dept</th>
 										<th className='px-6 py-4'>Position</th>
@@ -237,6 +238,11 @@ export function UserView() {
 															{user.email}
 														</span>
 													</div>
+												</td>
+												<td className='px-6 py-4'>
+													<span className='text-sm text-slate-500'>
+														{user.profile?.gender || "-"}
+													</span>
 												</td>
 												<td className='px-6 py-4'>
 													<div className='flex flex-wrap gap-1.5'>

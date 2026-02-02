@@ -41,6 +41,7 @@ export const EditUserModal = ({ user, isOpen, onClose }: EditUserModalProps) => 
 			divisionId: "",
 			departmentId: "",
 			positionId: "",
+			gender: "",
 		},
 	});
 
@@ -54,6 +55,7 @@ export const EditUserModal = ({ user, isOpen, onClose }: EditUserModalProps) => 
 				divisionId: user.profile?.division?.id || "",
 				departmentId: user.profile?.department?.id || "",
 				positionId: user.profile?.position?.id || "",
+				gender: user.profile?.gender || "",
 			});
 		}
 	}, [user, form]);
@@ -150,6 +152,28 @@ export const EditUserModal = ({ user, isOpen, onClose }: EditUserModalProps) => 
 												Employee ID already exists in this organization.
 											</p>
 										)}
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name='gender'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Gender</FormLabel>
+									<FormControl>
+										<select
+											{...field}
+											className='flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+										>
+											<option value='' disabled>
+												Select gender
+											</option>
+											<option value='IKHWAN'>IKHWAN</option>
+											<option value='AKHWAT'>AKHWAT</option>
+										</select>
+									</FormControl>
 									<FormMessage />
 								</FormItem>
 							)}

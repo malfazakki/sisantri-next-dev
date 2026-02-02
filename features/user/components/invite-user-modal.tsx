@@ -39,6 +39,7 @@ export const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
 			divisionId: "",
 			departmentId: "",
 			positionId: "",
+			gender: "",
 		},
 	});
 
@@ -132,6 +133,26 @@ export const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
 									{empIdValue && !isActuallyChecking && !checkData?.exists && (
 										<p className='text-sm font-medium text-green-600'>Employee ID is available.</p>
 									)}
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name='gender'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Gender (Optional)</FormLabel>
+									<FormControl>
+										<select
+											{...field}
+											className='flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+										>
+											<option value=''>Select gender</option>
+											<option value='IKHWAN'>IKHWAN</option>
+											<option value='AKHWAT'>AKHWAT</option>
+										</select>
+									</FormControl>
 									<FormMessage />
 								</FormItem>
 							)}

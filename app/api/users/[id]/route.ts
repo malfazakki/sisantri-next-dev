@@ -64,7 +64,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
 		const { id } = await params;
 		const body = await request.json();
-		const { email, fullName, empId, divisionId, departmentId, positionId, roleId, batchId } = body;
+		const { email, fullName, empId, divisionId, departmentId, positionId, roleId, batchId, gender } = body;
 
 		// Check if user exists and belongs to the same organization
 		const existingUser = await prisma.user.findFirst({
@@ -111,6 +111,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 				data: {
 					fullName: fullName !== undefined ? fullName : undefined,
 					empId: empId !== undefined ? empId : undefined,
+					gender: gender === "" ? null : gender || undefined,
 					divisionId: divisionId || undefined,
 					departmentId: departmentId === "" ? null : departmentId || undefined,
 					positionId: positionId === "" ? null : positionId || undefined,
