@@ -19,6 +19,7 @@ import {
 	ChevronsUpDown,
 	Briefcase,
 	GraduationCap,
+	ClipboardCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/hooks/use-auth-store";
@@ -42,6 +43,7 @@ const menuItems = [
 	{ name: "Roles", href: "/roles", icon: ShieldCheck },
 	{ name: "Users", href: "/users", icon: Users },
 	{ name: "Activities", href: "/activities", icon: Activity },
+	{ name: "Attendance", href: "/attendance", icon: ClipboardCheck },
 	{ name: "Batches", href: "/batches", icon: GraduationCap },
 ];
 

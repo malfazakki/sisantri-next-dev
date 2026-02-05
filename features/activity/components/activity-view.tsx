@@ -11,7 +11,6 @@ import {
 	UserPlus,
 	Users,
 	CalendarCheck,
-	BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CreateActivityModal } from "./create-activity-modal";
@@ -43,20 +42,10 @@ export function ActivityView() {
 					<h1 className='text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100'>Activities</h1>
 					<p className='text-zinc-500 dark:text-zinc-400'>Manage and monitor all organization activities.</p>
 				</div>
-				<div className='flex items-center gap-3'>
-					<Button
-						variant='outline'
-						onClick={() => router.push("/activities/report")}
-						className='flex items-center gap-2'
-					>
-						<BarChart3 className='w-4 h-4' />
-						Attendance Report
-					</Button>
-					<Button onClick={() => setIsCreateOpen(true)} className='flex items-center gap-2'>
-						<Plus className='w-4 h-4' />
-						Add Activity
-					</Button>
-				</div>
+				<Button onClick={() => setIsCreateOpen(true)} className='flex items-center gap-2'>
+					<Plus className='w-4 h-4' />
+					Add Activity
+				</Button>
 			</div>
 
 			<CreateActivityModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
