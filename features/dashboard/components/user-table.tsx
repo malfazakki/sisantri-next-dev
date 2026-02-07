@@ -26,59 +26,61 @@ export function UserTable({ users }: UserTableProps) {
   };
 
   return (
-    <div className="rounded-xl border bg-white shadow-sm dark:bg-zinc-950">
+    <div className="rounded-[32px] border border-slate-200 bg-white shadow-soft overflow-hidden">
       <Table>
-        <TableHeader>
-          <TableRow className="hover:bg-transparent">
-            <TableHead className="w-[150px]">Employee ID</TableHead>
-            <TableHead>User</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Roles</TableHead>
-            <TableHead className="text-right">Joined At</TableHead>
+        <TableHeader className="bg-slate-50/50">
+          <TableRow className="hover:bg-transparent border-slate-100">
+            <TableHead className="w-[150px] text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 pl-8 py-5">Employee ID</TableHead>
+            <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 py-5">User</TableHead>
+            <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 py-5">Email</TableHead>
+            <TableHead className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 py-5">Roles</TableHead>
+            <TableHead className="text-right text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 pr-8 py-5">Joined At</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {users.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
+              <TableCell colSpan={5} className="h-48 text-center text-slate-400 font-medium italic">
                 No users found in this organization.
               </TableCell>
             </TableRow>
           ) : (
             users.map((user) => (
-              <TableRow key={user.id} className="group transition-colors">
-                <TableCell className="font-mono text-sm text-muted-foreground">
+              <TableRow key={user.id} className="group transition-all hover:bg-indigo-50/30 border-slate-100 cursor-default">
+                <TableCell className="pl-8 py-5 font-mono text-xs font-bold text-slate-400 group-hover:text-indigo-600 transition-colors">
                   {user.empId}
                 </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-9 w-9 border border-zinc-100 dark:border-zinc-800">
-                      <AvatarFallback className="bg-zinc-100 text-xs font-semibold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
-                        {getInitials(user.fullName)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                <TableCell className="py-5">
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <Avatar className="h-10 w-10 border-2 border-slate-50 group-hover:border-indigo-100 transition-all shadow-sm">
+                        <AvatarFallback className="bg-indigo-600 text-white text-[10px] font-extrabold uppercase tracking-tight">
+                          {getInitials(user.fullName)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <span className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors font-plus-jakarta">
                       {user.fullName}
                     </span>
                   </div>
                 </TableCell>
-                <TableCell className="text-zinc-600 dark:text-zinc-400">
+                <TableCell className="py-5 text-slate-500 font-medium text-sm">
                   {user.email}
                 </TableCell>
-                <TableCell>
-                  <div className="flex flex-wrap gap-1.5">
+                <TableCell className="py-5">
+                  <div className="flex flex-wrap gap-2">
                     {user.roles.map((role) => (
                       <Badge
                         key={role}
                         variant="outline"
-                        className="rounded-md px-2 py-0 text-[10px] font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300"
+                        className="rounded-lg px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest bg-slate-50/50 text-slate-600 border-slate-100 group-hover:bg-indigo-50 group-hover:text-indigo-600 group-hover:border-indigo-100 transition-all"
                       >
                         {role}
                       </Badge>
                     ))}
                   </div>
                 </TableCell>
-                <TableCell className="text-right text-sm text-muted-foreground">
+                <TableCell className="text-right pr-8 py-5 text-sm font-bold text-slate-400 font-mono">
                   {format(new Date(user.createdAt), "MMM dd, yyyy")}
                 </TableCell>
               </TableRow>

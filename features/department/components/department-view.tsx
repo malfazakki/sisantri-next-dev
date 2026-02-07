@@ -19,56 +19,88 @@ export function DepartmentView() {
 	};
 
 	return (
-		<div className='p-6'>
-			<div className='flex items-center justify-between'>
+		<div className='p-8'>
+			{/* Page Header */}
+			<div className='flex items-start justify-between mb-8'>
 				<div>
-					<h1 className='text-3xl font-bold text-slate-800'>Department</h1>
-					<p className='mt-2 text-slate-600'>List of all departments within the organization.</p>
+					<div className='flex items-center gap-3 mb-2'>
+						<h1 className='text-4xl font-extrabold text-slate-900 tracking-tight font-plus-jakarta'>
+							Department
+						</h1>
+						{!isLoading && departments && (
+							<span className='px-3 py-1 bg-indigo-50 text-indigo-600 rounded-xl text-sm font-bold'>
+								{departments.length}
+							</span>
+						)}
+					</div>
+					<p className='text-sm font-medium text-slate-500'>
+						List of all departments within the organization
+					</p>
 				</div>
-				<Button onClick={() => setIsOpen(true)} className='flex items-center gap-2'>
-					<Plus className='w-4 h-4' />
+				<Button
+					onClick={() => setIsOpen(true)}
+					className='flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm hover:shadow-md transition-all'
+				>
+					<Plus className='w-4 h-4' strokeWidth={2.5} />
 					Add Department
 				</Button>
 			</div>
 
 			<CreateDepartmentModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
 
+			{/* Department Grid */}
 			{isLoading ? (
-				<div className='flex items-center justify-center p-12'>
+				<div className='flex items-center justify-center p-16'>
 					<Loader2 className='w-8 h-8 animate-spin text-slate-400' />
 				</div>
 			) : (
-				<div className='mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5'>
 					{departments?.length === 0 ? (
-						<div className='col-span-full p-12 text-center bg-white rounded-xl border border-dashed border-slate-200'>
-							<p className='text-slate-500'>No departments found. Create one to get started.</p>
+						<div className='col-span-full p-16 text-center bg-white rounded-2xl border-2 border-dashed border-slate-200'>
+							<p className='text-slate-400 font-medium italic'>
+								No departments found. Create one to get started.
+							</p>
 						</div>
 					) : (
 						departments?.map((dept) => (
 							<div
 								key={dept.id}
-								className='p-5 bg-white rounded-xl shadow-sm border border-slate-100 hover:border-indigo-200 transition-all group relative'
+								className='group relative bg-white rounded-2xl border border-slate-200/60 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] transition-all duration-200 hover:shadow-[0_8px_16px_-4px_rgba(0,0,0,0.08),0_4px_6px_-2px_rgba(0,0,0,0.03)] hover:-translate-y-1 hover:border-slate-300/70'
 							>
-								<div className='flex items-start justify-between'>
-									<div className='w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors'>
-										<Building2 className='w-5 h-5' />
+								{/* Card Content */}
+								<div className='p-6'>
+									{/* Icon and Delete Button */}
+									<div className='flex items-start justify-between mb-5'>
+										<div className='p-3 bg-indigo-50 rounded-xl transition-all duration-200 group-hover:bg-indigo-600 group-hover:scale-110'>
+											<Building2 className='w-6 h-6 text-indigo-600 transition-colors group-hover:text-white' strokeWidth={2} />
+										</div>
+										<Button
+											variant='ghost'
+											size='icon'
+											className='text-slate-300 hover:text-red-600 hover:bg-red-50 transition-colors -mt-1 -mr-1'
+											onClick={() => onDelete(dept.id)}
+										>
+											<Trash2 className='w-4 h-4' strokeWidth={2} />
+										</Button>
 									</div>
-									<Button
-										variant='ghost'
-										size='icon'
-										className='text-slate-300 hover:text-red-500 hover:bg-red-50 -mr-2 -mt-2'
-										onClick={() => onDelete(dept.id)}
-									>
-										<Trash2 className='w-4 h-4' />
-									</Button>
+
+									{/* Department Name */}
+									<h3 className='text-lg font-bold text-slate-900 mb-3 line-clamp-2 min-h-[3.5rem]'>
+										{dept.name}
+									</h3>
+
+									{/* Division Badge */}
+									<div className='mb-4'>
+										<span className='inline-flex px-2.5 py-1 bg-slate-50 text-slate-600 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-slate-100'>
+											{dept.division?.name || "No Division"}
+										</span>
+									</div>
+
+									{/* Department ID */}
+									<p className='text-[11px] text-slate-400 font-mono truncate'>
+										{dept.id}
+									</p>
 								</div>
-								<h3 className='mt-4 font-bold text-slate-800'>{dept.name}</h3>
-								<div className='flex items-center gap-2 mt-2'>
-									<span className='px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] font-medium uppercase tracking-wider'>
-										{dept.division?.name || "No Division"}
-									</span>
-								</div>
-								<p className='text-xs text-slate-400 mt-4 font-mono truncate'>ID: {dept.id}</p>
 							</div>
 						))
 					)}

@@ -36,93 +36,169 @@ export function DashboardClient() {
 	if (!data) return null;
 
 	return (
-		<div className='flex flex-col gap-8 p-6'>
-			<div className='flex flex-col gap-2'>
+		<div className='flex flex-col gap-10 p-8'>
+			<div className='flex flex-col gap-4'>
 				<div className='flex items-center justify-between'>
-					<h1 className='text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100'>
-						{data.organizationName} Dashboard
-					</h1>
-					{user && <div className='text-sm font-medium text-zinc-500'>Welcome, {user.email}</div>}
+					<div className='group'>
+						<div className='flex items-center gap-2 mb-1'>
+							<div className='w-2 h-2 rounded-full bg-indigo-600' />
+							<span className='text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-600/70'>Overview</span>
+						</div>
+						<h1 className='text-4xl font-extrabold tracking-tight text-slate-900 font-plus-jakarta'>
+							SiSantri App
+						</h1>
+						<p className='text-slate-500 font-medium max-w-2xl mt-1'>
+							Manage your organization&apos;s activities and users with real-time analytics.
+						</p>
+					</div>
+					<div className='hidden lg:flex items-center gap-4 bg-white p-2 pr-4 rounded-2xl border border-slate-200 shadow-sm'>
+						<div className='w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600'>
+							<Activity size={20} />
+						</div>
+						<div>
+							<p className='text-[10px] font-bold uppercase tracking-wider text-slate-400'>Operational Status</p>
+							<p className='text-sm font-bold text-slate-700'>System Active</p>
+						</div>
+					</div>
 				</div>
-				<p className='text-zinc-500 dark:text-zinc-400'>Overview of your organization and user management.</p>
 			</div>
 
-			<div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
+			<div className='grid gap-6 md:grid-cols-2 lg:grid-cols-4'>
 				<StatsCard
 					title='Total Divisions'
 					value={data.stats.divisions}
 					icon={Layers}
 					color='blue'
-					description='Total active divisions'
+					description='Organization segments'
 				/>
 				<StatsCard
 					title='Total Departments'
 					value={data.stats.departments}
 					icon={Building2}
 					color='violet'
-					description='Total departments'
+					description='Functional units'
 				/>
 				<StatsCard
 					title='Total Activities'
 					value={data.stats.activities}
 					icon={Activity}
 					color='indigo'
-					description='Total activities created'
+					description='Operations tracked'
 				/>
 				<StatsCard
 					title='Total Users'
 					value={data.stats.users}
 					icon={Users}
 					color='emerald'
-					description='Registered users'
+					description='Active members'
 				/>
 			</div>
 
-			<div className='flex flex-col gap-4'>
-				<h2 className='text-xl font-semibold text-zinc-900 dark:text-zinc-100'>
-					Today&apos;s Attendance Summary
-				</h2>
-				<div className='grid gap-4 md:grid-cols-2 lg:grid-cols-5'>
-					<div className='rounded-xl border bg-white p-4 shadow-sm dark:bg-zinc-950'>
-						<div className='text-xs font-bold uppercase tracking-wider text-zinc-500'>Total</div>
-						<div className='mt-1 text-2xl font-bold text-zinc-900 dark:text-zinc-100'>
-							{data.stats.attendanceToday.total}
+			{/* Attendance Summary Section */}
+			<div className='bg-white rounded-3xl border border-slate-200 p-8 shadow-soft relative overflow-hidden'>
+				<div className='absolute top-0 right-0 w-64 h-64 bg-indigo-50/50 rounded-full blur-3xl -mr-32 -mt-32' />
+				<div className='relative'>
+					<div className='flex items-center justify-between mb-8'>
+						<div>
+							<h2 className='text-2xl font-bold text-slate-900 font-plus-jakarta'>
+								Attendance Today
+							</h2>
+							<p className='text-slate-500 text-sm mt-1'>Daily participation snapshot</p>
+						</div>
+						<div className='text-right'>
+							<p className='text-[10px] font-bold uppercase tracking-wider text-slate-400'>Total Participation</p>
+							<p className='text-3xl font-extrabold text-indigo-600 font-plus-jakarta'>{data.stats.attendanceToday.total}</p>
 						</div>
 					</div>
-					<div className='rounded-xl border bg-white p-4 shadow-sm dark:bg-zinc-950 border-l-4 border-l-emerald-500'>
-						<div className='text-xs font-bold uppercase tracking-wider text-zinc-500'>Present (H)</div>
-						<div className='mt-1 text-2xl font-bold text-emerald-600 dark:text-emerald-400'>
-							{data.stats.attendanceToday.present}
-						</div>
-					</div>
-					<div className='rounded-xl border bg-white p-4 shadow-sm dark:bg-zinc-950 border-l-4 border-l-amber-500'>
-						<div className='text-xs font-bold uppercase tracking-wider text-zinc-500'>Sick (S)</div>
-						<div className='mt-1 text-2xl font-bold text-amber-600 dark:text-amber-400'>
-							{data.stats.attendanceToday.sick}
-						</div>
-					</div>
-					<div className='rounded-xl border bg-white p-4 shadow-sm dark:bg-zinc-950 border-l-4 border-l-blue-500'>
-						<div className='text-xs font-bold uppercase tracking-wider text-zinc-500'>Permission (I)</div>
-						<div className='mt-1 text-2xl font-bold text-blue-600 dark:text-blue-400'>
-							{data.stats.attendanceToday.permission}
-						</div>
-					</div>
-					<div className='rounded-xl border bg-white p-4 shadow-sm dark:bg-zinc-950 border-l-4 border-l-rose-500'>
-						<div className='text-xs font-bold uppercase tracking-wider text-zinc-500'>Absent (A)</div>
-						<div className='mt-1 text-2xl font-bold text-rose-600 dark:text-rose-400'>
-							{data.stats.attendanceToday.absent}
-						</div>
+
+					<div className='grid gap-6 md:grid-cols-2 lg:grid-cols-4'>
+						<AttendanceItem
+							label="Present"
+							value={data.stats.attendanceToday.present}
+							total={data.stats.attendanceToday.total}
+							color="emerald"
+							suffix="H"
+						/>
+						<AttendanceItem
+							label="Sick"
+							value={data.stats.attendanceToday.sick}
+							total={data.stats.attendanceToday.total}
+							color="amber"
+							suffix="S"
+						/>
+						<AttendanceItem
+							label="Permission"
+							value={data.stats.attendanceToday.permission}
+							total={data.stats.attendanceToday.total}
+							color="blue"
+							suffix="I"
+						/>
+						<AttendanceItem
+							label="Absent"
+							value={data.stats.attendanceToday.absent}
+							total={data.stats.attendanceToday.total}
+							color="rose"
+							suffix="A"
+						/>
 					</div>
 				</div>
 			</div>
 
-			<div className='flex flex-col gap-4'>
+			<div className='flex flex-col gap-6'>
 				<div className='flex items-center justify-between'>
-					<h2 className='text-xl font-semibold text-zinc-900 dark:text-zinc-100'>
-						Recent Organization Users
-					</h2>
+					<div>
+						<h2 className='text-2xl font-bold text-slate-900 font-plus-jakarta'>
+							Recent Members
+						</h2>
+						<p className='text-slate-500 text-sm mt-1'>Latest additions to your organization</p>
+					</div>
+					<button className='text-sm font-bold text-indigo-600 hover:text-indigo-700 transition-colors px-4 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100/50'>
+						View All Users
+					</button>
 				</div>
 				<UserTable users={data.recentUsers} />
+			</div>
+		</div>
+	);
+}
+
+function AttendanceItem({ label, value, total, color, suffix }: {
+	label: string,
+	value: number,
+	total: number,
+	color: 'emerald' | 'amber' | 'blue' | 'rose',
+	suffix: string
+}) {
+	const percentage = total > 0 ? (value / total) * 100 : 0;
+
+	const colors = {
+		emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600', bar: 'bg-emerald-500', dot: 'bg-emerald-400' },
+		amber: { bg: 'bg-amber-50', text: 'text-amber-600', bar: 'bg-amber-500', dot: 'bg-amber-400' },
+		blue: { bg: 'bg-blue-50', text: 'text-blue-600', bar: 'bg-blue-500', dot: 'bg-blue-400' },
+		rose: { bg: 'bg-rose-50', text: 'text-rose-600', bar: 'bg-rose-500', dot: 'bg-rose-400' },
+	};
+
+	const c = colors[color];
+
+	return (
+		<div className='p-6 rounded-2xl bg-white border border-slate-100 shadow-sm transition-all hover:shadow-md'>
+			<div className='flex items-center justify-between mb-4'>
+				<div className='flex items-center gap-2'>
+					<div className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
+					<span className='text-xs font-bold uppercase tracking-wider text-slate-500'>{label} ({suffix})</span>
+				</div>
+				<span className={`text-xs font-bold ${c.text} ${c.bg} px-2 py-0.5 rounded-full`}>
+					{Math.round(percentage)}%
+				</span>
+			</div>
+			<div className='flex items-end justify-between gap-4'>
+				<span className='text-3xl font-extrabold text-slate-900 font-plus-jakarta'>{value}</span>
+				<div className='flex-1 h-2 bg-slate-50 rounded-full overflow-hidden mb-2'>
+					<div
+						className={`h-full ${c.bar} transition-all duration-1000`}
+						style={{ width: `${percentage}%` }}
+					/>
+				</div>
 			</div>
 		</div>
 	);

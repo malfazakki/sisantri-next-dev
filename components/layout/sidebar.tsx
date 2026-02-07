@@ -99,20 +99,20 @@ export function Sidebar() {
 			{/* Sidebar Container */}
 			<aside
 				className={cn(
-					"fixed top-0 left-0 h-full bg-white border-r border-slate-200 z-40 transition-all duration-300 ease-in-out flex flex-col shadow-sm",
+					"fixed top-0 left-0 h-full bg-white border-r border-slate-200 z-40 transition-all duration-300 ease-in-out flex flex-col shadow-[0_0_15px_rgba(0,0,0,0.02)]",
 					isCollapsed ? "w-20 overflow-x-hidden" : "w-64",
 					isMobileOpen ? "translate-x-0 w-64" : "max-md:-translate-x-full",
 					"md:translate-x-0",
 				)}
 			>
 				{/* Logo Section */}
-				<div className='h-20 flex items-center px-6 border-b border-slate-50'>
+				<div className='h-20 flex items-center px-6'>
 					<div className='flex items-center gap-3 overflow-hidden'>
-						<div className='w-8 h-8 rounded-lg bg-indigo-600 flex-shrink-0 flex items-center justify-center text-white font-bold'>
-							S
+						<div className='w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex-shrink-0 flex items-center justify-center text-white shadow-lg shadow-indigo-200'>
+							<ShieldCheck size={20} strokeWidth={2.5} />
 						</div>
 						{!isCollapsed && (
-							<span className='font-bold text-xl text-slate-800 tracking-tight whitespace-nowrap'>
+							<span className='font-bold text-xl text-slate-900 tracking-tight whitespace-nowrap font-plus-jakarta'>
 								SiSantri
 							</span>
 						)}
@@ -120,7 +120,7 @@ export function Sidebar() {
 				</div>
 
 				{/* Navigation Section */}
-				<nav className='flex-1 py-6 px-3 space-y-2 overflow-y-auto overflow-x-hidden'>
+				<nav className='flex-1 py-4 px-3 space-y-1 overflow-y-auto overflow-x-hidden'>
 					{menuItems.map((item) => {
 						const isActive = pathname === item.href;
 						const Icon = item.icon;
@@ -131,26 +131,37 @@ export function Sidebar() {
 								href={item.href}
 								onClick={() => setIsMobileOpen(false)}
 								className={cn(
-									"flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative",
+									"flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative",
 									isActive
-										? "bg-indigo-50 text-indigo-600"
+										? "bg-indigo-50/80 text-indigo-600 shadow-sm"
 										: "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
 									isCollapsed && "justify-center",
 								)}
 							>
+								{isActive && (
+									<div className='absolute left-0 w-1 h-6 bg-indigo-600 rounded-r-full' />
+								)}
+
 								<Icon
-									size={22}
+									size={20}
 									className={cn(
-										"flex-shrink-0 transition-transform group-hover:scale-110",
-										isActive ? "text-indigo-600" : "text-slate-400 group-hover:text-slate-600",
+										"flex-shrink-0 transition-all",
+										isActive ? "text-indigo-600 scale-110" : "text-slate-400 group-hover:text-slate-600",
 									)}
 								/>
 
-								{!isCollapsed && <span className='font-medium whitespace-nowrap'>{item.name}</span>}
+								{!isCollapsed && (
+									<span className={cn(
+										"text-sm font-medium whitespace-nowrap",
+										isActive ? "text-indigo-600" : "text-slate-600"
+									)}>
+										{item.name}
+									</span>
+								)}
 
 								{/* Tooltip for collapsed state */}
 								{isCollapsed && (
-									<div className='absolute left-full ml-4 px-3 py-2 bg-slate-800 text-white text-xs rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap'>
+									<div className='absolute left-full ml-4 px-3 py-2 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-wider rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap shadow-xl'>
 										{item.name}
 									</div>
 								)}
@@ -160,85 +171,85 @@ export function Sidebar() {
 				</nav>
 
 				{/* Collapse Toggle (Desktop only) */}
-				<div className='p-4 border-t border-slate-50 hidden md:block'>
+				<div className='px-3 py-4 border-t border-slate-100 hidden md:block'>
 					<button
 						onClick={toggleSidebar}
-						className='w-full h-10 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-400 transition-colors'
+						className='w-full h-10 flex items-center justify-center rounded-xl hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-all border border-transparent hover:border-slate-100'
 					>
 						{isCollapsed ? (
-							<ChevronRight size={20} />
+							<ChevronRight size={18} />
 						) : (
 							<div className='flex items-center gap-2'>
-								<ChevronLeft size={20} />
-								<span className='text-sm font-medium'>Collapse</span>
+								<ChevronLeft size={18} />
+								<span className='text-xs font-bold uppercase tracking-widest'>Collapse</span>
 							</div>
 						)}
 					</button>
 				</div>
 
-				{/* User Profile Hook-up */}
-				<div className='p-4 border-t border-slate-50'>
+				{/* User Profile section */}
+				<div className='p-4 border-t border-slate-100 bg-slate-50/30'>
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<button
 								className={cn(
-									"flex items-center gap-3 p-2 rounded-xl bg-slate-50/50 hover:bg-slate-100 transition-colors w-full text-left outline-none",
-									isCollapsed && "justify-center",
+									"flex items-center gap-3 p-2.5 rounded-2xl bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-100 transition-all w-full text-left outline-none",
+									isCollapsed && "justify-center px-2",
 								)}
 							>
-								<Avatar className='h-8 w-8 rounded-lg'>
+								<Avatar className='h-9 w-9 border-2 border-slate-50'>
 									<AvatarImage src={user?.profile?.avatar as string} alt={user?.name || "User"} />
-									<AvatarFallback className='rounded-lg bg-indigo-100 text-indigo-700 font-bold'>
-										{user?.name?.substring(0, 2).toUpperCase() || "US"}
+									<AvatarFallback className='rounded-lg bg-indigo-600 text-white font-bold text-xs'>
+										{user?.name?.substring(0, 2).toUpperCase() || "AD"}
 									</AvatarFallback>
 								</Avatar>
 								{!isCollapsed && (
 									<div className='flex items-center justify-between flex-1 min-w-0'>
 										<div className='overflow-hidden text-left'>
-											<p className='text-sm font-semibold text-slate-800 truncate'>
+											<p className='text-xs font-bold text-slate-900 truncate'>
 												{user?.name || "Administrator"}
 											</p>
-											<p className='text-xs text-slate-500 truncate'>
+											<p className='text-[10px] font-medium text-slate-500 truncate'>
 												{user?.email || "admin@sisantri.com"}
 											</p>
 										</div>
-										<ChevronsUpDown className='ml-auto size-4 text-slate-500' />
+										<ChevronsUpDown className='ml-2 size-4 text-slate-400 shrink-0' />
 									</div>
 								)}
 							</button>
 						</DropdownMenuTrigger>
-						<DropdownMenuContent className='w-56 rounded-lg' side='right' align='end' sideOffset={12}>
-							<DropdownMenuLabel className='p-0 font-normal'>
-								<div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
-									<Avatar className='h-8 w-8 rounded-lg'>
+						<DropdownMenuContent className='w-64 rounded-2xl p-2 shadow-premium border-slate-100' side='right' align='end' sideOffset={12}>
+							<DropdownMenuLabel className='p-3 font-normal'>
+								<div className='flex items-center gap-3'>
+									<Avatar className='h-10 w-10 border-2 border-indigo-50'>
 										<AvatarImage src={user?.profile?.avatar as string} alt={user?.name || "User"} />
-										<AvatarFallback className='rounded-lg bg-indigo-100 text-indigo-700 font-bold'>
-											{user?.name?.substring(0, 2).toUpperCase() || "US"}
+										<AvatarFallback className='rounded-lg bg-indigo-600 text-white font-bold'>
+											{user?.name?.substring(0, 2).toUpperCase() || "AD"}
 										</AvatarFallback>
 									</Avatar>
-									<div className='grid flex-1 text-left text-sm leading-tight'>
-										<span className='truncate font-semibold'>{user?.name || "Administrator"}</span>
-										<span className='truncate text-xs'>{user?.email || "admin@sisantri.com"}</span>
+									<div className='grid flex-1 text-left leading-tight'>
+										<span className='truncate font-bold text-slate-900'>{user?.name || "Administrator"}</span>
+										<span className='truncate text-xs text-slate-500'>{user?.email || "admin@sisantri.com"}</span>
 									</div>
 								</div>
 							</DropdownMenuLabel>
-							<DropdownMenuSeparator />
-							<DropdownMenuGroup>
-								<DropdownMenuItem onClick={() => router.push("/profile")}>
+							<DropdownMenuSeparator className='bg-slate-100' />
+							<DropdownMenuGroup className='p-1'>
+								<DropdownMenuItem className='rounded-xl focus:bg-indigo-50 focus:text-indigo-600 py-2.5' onClick={() => router.push("/profile")}>
 									<User className='mr-2 h-4 w-4' />
-									Account
+									<span className='font-medium'>My Profile</span>
 								</DropdownMenuItem>
 							</DropdownMenuGroup>
-							<DropdownMenuSeparator />
+							<DropdownMenuSeparator className='bg-slate-100' />
 							<DropdownMenuItem
-								className='text-red-600 focus:text-red-600 focus:bg-red-50'
+								className='rounded-xl text-rose-600 focus:text-rose-700 focus:bg-rose-50 py-2.5 m-1'
 								onClick={() => {
 									logout();
 									router.push("/login");
 								}}
 							>
 								<LogOut className='mr-2 h-4 w-4' />
-								Sign out
+								<span className='font-medium'>Sign out</span>
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
